@@ -136,6 +136,11 @@ export default function InfoPage1({ route }) {
           "Status",
           "Coming"
         );
+        create(
+          "/Booking/" + valueBookingData.toString() + "/",
+          "IDUser",
+          parseInt(valueUser.val) + 1
+        );
 
         create("/Booking/", "Value", valueBookingData);
 

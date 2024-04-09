@@ -46,10 +46,10 @@ const database = getDatabase(app);
 const Register = () => {
   const navigation = useNavigation();
   const data = [
-    { label: "Kế toán", value: "1" , form: "Ketoan"},
+    { label: "Kế toán", value: "1", form: "Ketoan" },
     { label: "Cộng tác viên", value: "2", form: "CTV" },
-    { label: "Đại lí", value: "3", form:"Daili"},
-    { label: "Lễ tân", value: "4" , form:"Letan"},
+    { label: "Đại lí", value: "3", form: "Daili" },
+    { label: "Lễ tân", value: "4", form: "Letan" },
   ];
 
   const dataGender = [
@@ -110,7 +110,10 @@ const Register = () => {
       //Add data to database
       addData();
       // Navigate to the next screen
-      Alert.alert("Success", "Bạn đã đăng ký thành công! Hãy kiểm tra địa chỉ email nhé!");
+      Alert.alert(
+        "Success",
+        "Bạn đã đăng ký thành công! Hãy kiểm tra địa chỉ email nhé!"
+      );
     }
   };
 
@@ -166,10 +169,7 @@ const Register = () => {
       "/User_management/" + username + "/Agency/Amount_Total",
       "0"
     );
-    setDataToLocation(
-      "/User_management/" + username + "/Role",
-      labelling
-    );
+    setDataToLocation("/User_management/" + username + "/Role", labelling);
 
     setDataToLocation("/User_management/" + username + "/Bank/Bank", "");
     setDataToLocation("/User_management/" + username + "/Bank/Name", "");
@@ -299,7 +299,7 @@ const Register = () => {
           <TouchableOpacity onPress={handleSignUp} style={styles.button}>
             <Text style={styles.buttonText}>Sign Up</Text>
           </TouchableOpacity>
-          <Text style={{ height: 50 }}></Text>
+          <Text style={{ height: 330 }}></Text>
         </View>
       </GestureHandlerScrollView>
     </GestureHandlerRootView>

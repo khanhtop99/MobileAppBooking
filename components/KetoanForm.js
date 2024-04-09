@@ -3,14 +3,11 @@ import {
   View,
   Text,
   ImageBackground,
-  ScrollView,
-  Button,
   TouchableOpacity,
   TextInput,
   Modal,
   StatusBar,
-  Pressable,
-  Platform,
+  Alert,
 } from "react-native";
 import styles from "./css/KetoanStyle";
 import {
@@ -63,23 +60,11 @@ export default function UserForm({ route }) {
   const [isFocus, setIsFocus] = useState(false);
   const [orderAmount, setOrderAmount] = useState(null);
 
-  const [date, setDate] = useState(new Date());
-  const [dateOfBirth, setDateOfBirth] = useState("");
-  const [showPicker, setShowPicker] = useState(false);
+  const [ctvName, setCTVName] = useState("");
+  const [ctvPhone, setCTVPhone] = useState("");
 
   const [image, setImage] = useState("");
   const [webUri, setWebUri] = useState("");
-
-  const data = [
-    { label: "Item 1", value: "1" },
-    { label: "Item 2", value: "2" },
-    { label: "Item 3", value: "3" },
-    { label: "Item 4", value: "4" },
-    { label: "Item 5", value: "5" },
-    { label: "Item 6", value: "6" },
-    { label: "Item 7", value: "7" },
-    { label: "Item 8", value: "8" },
-  ];
 
   function create(path, name, value) {
     set(ref(database, path + name), value);
@@ -104,7 +89,7 @@ export default function UserForm({ route }) {
   }
   useEffect(() => {
     handleRead();
-  }, []);
+  }, [ctvName, ctvPhone]);
 
   const handleRead = async () => {
     try {
@@ -140,8 +125,21 @@ export default function UserForm({ route }) {
     }
   };
 
+  const getCTVPhone = async (bookingID) => {
+    let valueUsername = { val: null };
+    let valuePhone = { val: null };
+    await read("/Booking/" + bookingID + "/Account", valueUsername);
+    setCTVName(valueUsername.val);
+    await read(
+      "/User_management/" + valueUsername.val + "/Account/Phone/",
+      valuePhone
+    );
+    setCTVPhone(valuePhone.val);
+  };
+
   const handleMoreUpPress = (bookingId) => {
     setSelectedBookingId(bookingId);
+    getCTVPhone(bookingId);
     setIsModalUpVisible(true);
   };
 
@@ -150,25 +148,79 @@ export default function UserForm({ route }) {
     setIsModalDownVisible(true);
   };
 
-  const handlePress = async () => {
-    // Xử lý các hành động khi nút được nhấn ở đây
+  const handleClose = () => {
+    setOrderAmount("");
+    setIsModalUpVisible(false);
+  };
+
+  const handleAccept = async () => {
+    var valueUser = { val: null };
+    await read(
+      "/Booking/" + selectedBookingId.toString() + "/IDUser",
+      valueUser
+    );
+    console.log(valueUser.val);
+
     if (orderAmount !== null) {
-      // Only proceed if orderAmount is not null
-      create(
-        "/Booking/" + selectedBookingId.toString() + "/",
-        "Amount",
-        orderAmount
-      );
-      setIsModalUpVisible(false); // Close the modal after accepting
+      Alert.alert("Bạn có chắc chắn muốn chấp nhận đơn không?", "", [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            create(
+              "/Booking/" + selectedBookingId.toString() + "/",
+              "Amount",
+              orderAmount
+            );
+
+            create(
+              "/Booking/" + selectedBookingId.toString() + "/",
+              "Status",
+              "Purchase"
+            );
+
+            create(
+              "/User_management/" +
+                ctvName +
+                "/Account/Booking/" +
+                valueUser.val +
+                "/",
+              "Amount",
+              orderAmount
+            );
+
+            create(
+              "/User_management/" +
+                ctvName +
+                "/Account/Booking/" +
+                valueUser.val +
+                "/",
+              "Status",
+              "Purchase"
+            );
+
+            Alert.alert("Xác nhận đơn thành công");
+            setCTVName("");
+            setCTVPhone("");
+            setOrderAmount("");
+          },
+        },
+      ]);
     } else {
-      // Handle case where orderAmount is null (not yet filled)
-      console.log("Please enter order amount");
+      Alert.alert("Hãy nhập số tiền");
     }
   };
 
-  //Xứ lý bật tắt date picker
-  const toggleDatePicker = () => {
-    setShowPicker(true);
+  const parseTimeString = (timeString) => {
+    let parts = timeString.split(/[-/]/);
+    let hour = parseInt(parts[0]);
+    let day = parseInt(parts[1]);
+    let month = parseInt(parts[2]);
+    let year = parseInt(parts[3]);
+    return new Date(year, month - 1, day, hour);
   };
 
   return (
@@ -227,20 +279,77 @@ export default function UserForm({ route }) {
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.scrollViewContent}
             >
-              {Object.keys(listBooking).map((bookingKey) => (
-                <View style={styles.item} key={bookingKey}>
-                  <Text style={styles.title}>
-                    {listBooking[bookingKey].Hub}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => handleMoreUpPress(bookingKey)}
-                    style={styles.moreButton}
-                  >
-                    <Text style={styles.moreButtonText}>More</Text>
-                    {/* Icon cho nút More có thể thêm vào đây */}
-                  </TouchableOpacity>
-                </View>
-              ))}
+              {Object.keys(listBooking)
+                .filter((bookingKey) => bookingKey !== "Value")
+                .sort((a, b) => {
+                  // Hàm so sánh cho việc sắp xếp theo trạng thái ưu tiên và sau đó theo thời gian từ mới nhất đến cũ nhất
+                  const statusA = listBooking[a].Status;
+                  const statusB = listBooking[b].Status;
+
+                  // Chỉ số ưu tiên của trạng thái
+                  const statusPriority = {
+                    Coming: 0,
+                    Arrival: 1,
+                    Purchase: 2,
+                    Cancel: 3,
+                  };
+
+                  // So sánh trạng thái theo ưu tiên
+                  if (statusPriority[statusA] !== statusPriority[statusB]) {
+                    return statusPriority[statusA] - statusPriority[statusB];
+                  } else {
+                    // Nếu trạng thái giống nhau, so sánh theo thời gian
+                    const timeA = parseTimeString(listBooking[a].Time);
+                    const timeB = parseTimeString(listBooking[b].Time);
+                    return timeB - timeA;
+                  }
+                })
+                .map((bookingKey) => {
+                  let backgroundColor = "white"; // Màu mặc định là trắng
+                  // Kiểm tra trạng thái và thiết lập màu tương ứng
+                  switch (listBooking[bookingKey].Status) {
+                    case "Coming":
+                      backgroundColor = "#f9f9f9";
+                      break;
+                    case "Arrival":
+                      backgroundColor = "#FFD700"; // Màu vàng
+                      break;
+                    case "Purchase":
+                      backgroundColor = "#7AE582"; // Màu xanh lá cây
+                      break;
+                    case "Cancel":
+                      backgroundColor = "#c65d5a"; // Màu đỏ
+                      break;
+                    default:
+                      backgroundColor = "#f9f9f9";
+                  }
+                  return (
+                    <View
+                      style={[
+                        styles.item,
+                        { backgroundColor: backgroundColor },
+                      ]}
+                      key={bookingKey}
+                    >
+                      <View style={{ flexDirection: "column" }}>
+                        <Text style={styles.title}>
+                          {listBooking[bookingKey].Hub}
+                        </Text>
+                        <Text style={styles.title}>
+                          {listBooking[bookingKey].Account}
+                        </Text>
+                      </View>
+
+                      <TouchableOpacity
+                        onPress={() => handleMoreUpPress(bookingKey)}
+                        style={styles.moreButton}
+                      >
+                        <Text style={styles.moreButtonText}>More</Text>
+                        {/* Icon cho nút More có thể thêm vào đây */}
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })}
             </GestureHandlerScrollView>
           </View>
 
@@ -301,7 +410,7 @@ export default function UserForm({ route }) {
               <View style={styles.modalContainer}>
                 <TouchableOpacity
                   style={styles.closeButton}
-                  onPress={() => setIsModalUpVisible(false)}
+                  onPress={handleClose}
                 >
                   <Text style={styles.closeButtonText}>X</Text>
                 </TouchableOpacity>
@@ -313,18 +422,16 @@ export default function UserForm({ route }) {
                   style={styles.avatar}
                 />
                 <Text style={styles.userNameModal}>
-                  {selectedBookingId && listBooking[selectedBookingId].Name}
+                  {selectedBookingId && listBooking[selectedBookingId].Account}
                 </Text>
-                <Text style={styles.userEmailModal}>
-                  {selectedBookingId && listBooking[selectedBookingId].Phone}
-                </Text>
+                <Text style={styles.userEmailModal}>{ctvPhone}</Text>
                 <View>
                   {/* sửa biến ở đây */}
                   <View style={[styles.containerDropDown]}>
                     <ReadOnlyField
                       label="Đơn tại:"
                       value={
-                        selectedBookingId && listBooking[selectedBookingId].Name
+                        selectedBookingId && listBooking[selectedBookingId].Hub
                       }
                     />
                   </View>
@@ -342,7 +449,8 @@ export default function UserForm({ route }) {
                     <ReadOnlyField
                       label="SĐT liên hệ:"
                       value={
-                        selectedBookingId && listBooking[selectedBookingId].Name
+                        selectedBookingId &&
+                        listBooking[selectedBookingId].Phone
                       }
                     />
                   </View>
@@ -351,25 +459,26 @@ export default function UserForm({ route }) {
                     <ReadOnlyField
                       label="Số lượng khách:"
                       value={
-                        selectedBookingId && listBooking[selectedBookingId].Name
+                        selectedBookingId &&
+                        listBooking[selectedBookingId].Quantity
                       }
                     />
                   </View>
 
                   <View style={[styles.containerDropDown]}>
                     <ReadOnlyField
-                      label="Thời gian (vd:01/01/2024-20h30):"
+                      label="Thời gian (10h-04/04/2024):"
                       value={
-                        selectedBookingId && listBooking[selectedBookingId].Name
+                        selectedBookingId && listBooking[selectedBookingId].Time
                       }
                     />
                   </View>
 
                   <View style={[styles.containerDropDown]}>
                     <ReadOnlyField
-                      label="Dịch vụ khác:"
+                      label="Ghi chú:"
                       value={
-                        selectedBookingId && listBooking[selectedBookingId].Name
+                        selectedBookingId && listBooking[selectedBookingId].Note
                       }
                     />
                   </View>
@@ -398,7 +507,7 @@ export default function UserForm({ route }) {
 
                 <View style={styles.buttonContainer}>
                   <TouchableOpacity
-                    onPress={handlePress} // Call handlePress when button is pressed
+                    onPress={handleAccept} // Call handlePress when button is pressed
                     style={[styles.buttonModal, { backgroundColor: "#009470" }]}
                   >
                     <Text style={styles.modalButtonText}>Chấp nhận</Text>
@@ -410,6 +519,7 @@ export default function UserForm({ route }) {
                   </TouchableOpacity>
                 </View>
               </View>
+              <Text style={{ height: 330 }}></Text>
             </GestureHandlerScrollView>
           </Modal>
 
@@ -522,6 +632,7 @@ export default function UserForm({ route }) {
                   </TouchableOpacity>
                 </View>
               </View>
+              <Text style={{ height: 330 }}></Text>
             </GestureHandlerScrollView>
           </Modal>
         </GestureHandlerScrollView>

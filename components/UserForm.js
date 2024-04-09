@@ -355,7 +355,7 @@ export default function UserForm({ route }) {
                       // Nếu trạng thái giống nhau, so sánh theo thời gian
                       const timeA = parseTimeString(don_hang.val[a].Time);
                       const timeB = parseTimeString(don_hang.val[b].Time);
-                      return timeA - timeB;
+                      return timeB - timeA;
                     }
                   })
                   .map((key) => {
