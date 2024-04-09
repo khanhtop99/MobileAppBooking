@@ -56,8 +56,13 @@ export default function UserForm({ route }) {
   const navigation = useNavigation();
 
   const { inputText } = route.params;
-  const user_name = inputText;
-  // xử lí button
+
+  const [user_name, setUserName] = useState(inputText.slice(0, -1));
+
+  useEffect(() => {
+    handleRead();
+    donHangTichLuy();
+  }, [inputText]);
 
   const handlePress = () => {
     console.log("Button pressed");
@@ -87,10 +92,6 @@ export default function UserForm({ route }) {
 
   const [folderList, setFolderList] = useState([]);
 
-  function create(path, name, value) {
-    set(ref(database, path + name), value);
-  }
-
   function read(path, value) {
     const dbRef = ref(getDatabase());
     return get(child(dbRef, path))
@@ -109,15 +110,10 @@ export default function UserForm({ route }) {
       });
   }
 
-  useEffect(() => {
-    handleRead();
-  }, []);
-
   const handleRead = async () => {
     try {
       var values = { val: null };
-      await read("Folder/Value", values);
-      console.log(values.val); // Will contain the value after reading from the database
+      await read("Folder/Value", values); // Will contain the value after reading from the database
       // Do something with the input values
 
       const snapshotFolder = await get(ref(database, "Folder"));
@@ -133,7 +129,6 @@ export default function UserForm({ route }) {
         const latestFolders = folderArray.slice(values.val - 3, values.val);
 
         setFolderList(latestFolders);
-        console.log(latestFolders);
       } else {
         console.log("No data available");
       }
@@ -142,90 +137,6 @@ export default function UserForm({ route }) {
     }
   };
 
-  const dat_hang = async () => {
-    var values = { val: null };
-    await read("Booking/Value", values);
-    console.log(values.val); // Will contain the value after reading from the database
-    // Do something with the input values
-    var value = values.val;
-    if (value > 1000) {
-      value = 0;
-    }
-    value += 1;
-    if (text1 && text2 && text3 && text4 && text5) {
-      Alert.alert(
-        "Đơn hàng đã được gửi lên hệ thống \n Xin hãy chờ để được xác nhận"
-      );
-      create(
-        "/Booking/" + value.toString() + "/",
-        "Account",
-        user_name.toString()
-      );
-      create("/Booking/" + value.toString() + "/", "Hub", text1);
-      create("/Booking/" + value.toString() + "/", "Name", text2);
-      create("/Booking/" + value.toString() + "/", "Phone", text3);
-      create("/Booking/" + value.toString() + "/", "Time", text5 + text4);
-      create("/Booking/" + value.toString() + "/", "Amount", 0);
-      create("/Booking/", "Value", value);
-      create(
-        "/User_management/" +
-          user_name.toString() +
-          "/Account/Booking/" +
-          value.toString() +
-          "/",
-        "Account",
-        user_name.toString()
-      );
-      create(
-        "/User_management/" +
-          user_name.toString() +
-          "/Account/Booking/" +
-          value.toString() +
-          "/",
-        "Hub",
-        text1
-      );
-      create(
-        "/User_management/" +
-          user_name.toString() +
-          "/Account/Booking/" +
-          value.toString() +
-          "/",
-        "Name",
-        text2
-      );
-      create(
-        "/User_management/" +
-          user_name.toString() +
-          "/Account/Booking/" +
-          value.toString() +
-          "/",
-        "Phone",
-        text3
-      );
-      create(
-        "/User_management/" +
-          user_name.toString() +
-          "/Account/Booking/" +
-          value.toString() +
-          "/",
-        "Time",
-        text5 + text4
-      );
-      create(
-        "/User_management/" +
-          user_name.toString() +
-          "/Account/Booking/" +
-          value.toString() +
-          "/",
-        "Amount",
-        "0"
-      );
-    } else {
-      // Xử lý khi một hoặc nhiều biến text không tồn tại
-      Alert.alert("Vui lòng điền đầy đủ thông tin khách hàng");
-    }
-  };
   // user_management/username/'Account'/'Booking'/Value/co_so, time, value
   const [don_hang, setDonHang] = useState({ val: null });
   const [remain, Amount_remain] = useState({ val: null });
@@ -240,7 +151,7 @@ export default function UserForm({ route }) {
         donHangData
       );
       await read(
-        "User_management/" + user_name.toString() + "/Agency",
+        "User_management/" + user_name.toString() + "/Agency/",
         my_total
       );
 
@@ -253,30 +164,9 @@ export default function UserForm({ route }) {
     }
   };
 
-  useEffect(() => {
-    // Gọi hàm khi component được render
-    donHangTichLuy();
-  }, []); // Chỉ gọi một lần sau khi component được render
   if (!dataFetched) {
     return <ActivityIndicator />; // Hiển thị indicator khi đang fetch dữ liệu
   }
-  console.log(don_hang.val);
-  console.log(don_hang.val);
-
-  const carouselData = [
-    {
-      id: "01",
-      image: require("../assets/images/DSC00200.jpg"),
-    },
-    {
-      id: "02",
-      image: require("../assets/images/DSC00593.jpg"),
-    },
-    {
-      id: "03",
-      image: require("../assets/images/DSC00791.jpg"),
-    },
-  ];
 
   const getItemLayout = (data, index) => ({
     length: windowWidth,
@@ -290,6 +180,16 @@ export default function UserForm({ route }) {
     const index = scrollPosition / windowWidth;
 
     setActiveIndex(index);
+  };
+
+  // Hàm chuyển đổi chuỗi thời gian sang đối tượng Date
+  const parseTimeString = (timeString) => {
+    let parts = timeString.split(/[-/]/);
+    let hour = parseInt(parts[0]);
+    let day = parseInt(parts[1]);
+    let month = parseInt(parts[2]);
+    let year = parseInt(parts[3]);
+    return new Date(year, month - 1, day, hour);
   };
 
   const renderItem = ({ item, index }) => {
@@ -333,7 +233,7 @@ export default function UserForm({ route }) {
   };
 
   const renderDotIndicator = () => {
-    return carouselData.map((dot, index) => {
+    return folderList.map((dot, index) => {
       if (activeIndex.toFixed() == index) {
         return <View key={index} style={[styles.dot, styles.dotActive]}></View>;
       } else {
@@ -434,33 +334,80 @@ export default function UserForm({ route }) {
             >
               {don_hang.val &&
                 Object.keys(don_hang.val)
-                  .sort((a, b) => a - b) // Sắp xếp các khóa theo thứ tự tăng dần
-                  .map((key) => (
-                    <View key={key} style={[styles.flex]}>
-                      <Text style={[styles.br_10]}></Text>
-                      <View
-                        style={[
-                          styles.block,
-                          {
-                            width: "100%",
-                            backgroundColor:
-                              don_hang.val[key].Amount === "0"
-                                ? "white"
-                                : "#009476",
-                          },
-                        ]}
-                      >
-                        <Text style={styles.top_right}>
-                          ${don_hang.val[key].Amount}
-                        </Text>
-                        <Text style={styles.text}>{don_hang.val[key].Hub}</Text>
-                        <Text style={styles.text}>
-                          {don_hang.val[key].Time}
-                        </Text>
+                  .filter((key) => key !== "Value")
+                  .sort((a, b) => {
+                    // Hàm so sánh cho việc sắp xếp theo trạng thái ưu tiên và sau đó theo thời gian từ mới nhất đến cũ nhất
+                    const statusA = don_hang.val[a].Status;
+                    const statusB = don_hang.val[b].Status;
+
+                    // Chỉ số ưu tiên của trạng thái
+                    const statusPriority = {
+                      Coming: 0,
+                      Arrival: 1,
+                      Purchase: 2,
+                      Cancel: 3,
+                    };
+
+                    // So sánh trạng thái theo ưu tiên
+                    if (statusPriority[statusA] !== statusPriority[statusB]) {
+                      return statusPriority[statusA] - statusPriority[statusB];
+                    } else {
+                      // Nếu trạng thái giống nhau, so sánh theo thời gian
+                      const timeA = parseTimeString(don_hang.val[a].Time);
+                      const timeB = parseTimeString(don_hang.val[b].Time);
+                      return timeA - timeB;
+                    }
+                  })
+                  .map((key) => {
+                    let backgroundColor = "white"; // Màu mặc định là trắng
+
+                    // Kiểm tra trạng thái và thiết lập màu tương ứng
+                    switch (don_hang.val[key].Status) {
+                      case "Coming":
+                        backgroundColor = "white";
+                        break;
+                      case "Arrival":
+                        backgroundColor = "#FFD700"; // Màu vàng
+                        break;
+                      case "Purchase":
+                        backgroundColor = "#7AE582"; // Màu xanh lá cây
+                        break;
+                      case "Cancel":
+                        backgroundColor = "#c65d5a"; // Màu đỏ
+                        break;
+                      default:
+                        backgroundColor = "white";
+                    }
+
+                    return (
+                      <View key={key} style={[styles.flex]}>
+                        <Text style={[styles.br_10]}></Text>
+                        <View
+                          style={[
+                            styles.block,
+                            {
+                              width: "100%",
+                              backgroundColor: backgroundColor, // Sử dụng màu được thiết lập từ trạng thái
+                            },
+                          ]}
+                        >
+                          <Text style={styles.top_right}>
+                            ${don_hang.val[key].Amount}
+                          </Text>
+                          <Text style={styles.text}>
+                            {don_hang.val[key].Hub}
+                          </Text>
+                          <Text style={styles.text}>
+                            {don_hang.val[key].Name}
+                          </Text>
+                          <Text style={styles.text}>
+                            {don_hang.val[key].Time}
+                          </Text>
+                        </View>
+                        <Text style={[styles.br_10]}></Text>
                       </View>
-                      <Text style={[styles.br_10]}></Text>
-                    </View>
-                  ))}
+                    );
+                  })}
             </GestureHandlerScrollView>
           </View>
 
@@ -471,7 +418,9 @@ export default function UserForm({ route }) {
               <Text style={[styles.br_20]}></Text>
               <Text style={{ fontSize: 20 }}>Tên người dùng:{user_name}</Text>
               <View style={styles.flex_row}>
-                <Text style={{ fontSize: 20 }}>Cấp độ hiện tại:{total.val.Level}</Text>
+                <Text style={{ fontSize: 20 }}>
+                  Cấp độ hiện tại:{total.val.Amount_Total}
+                </Text>
               </View>
             </View>
           </View>
@@ -483,7 +432,7 @@ export default function UserForm({ route }) {
                 onPress={handlePress}
               >
                 <Text style={[styles.buttonText]}>
-                  Tiền hiện tại: {total.val.Amount_remain}{" "}
+                  Tiền hiện tại: {total.val.Amount_Remain}{" "}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity

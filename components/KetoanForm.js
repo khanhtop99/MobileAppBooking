@@ -203,7 +203,6 @@ export default function UserForm({ route }) {
               <Text style={[styles.br_20]}></Text>
               <Text style={{ fontSize: 20 }}>{user_name}</Text>
               <View style={styles.flex_row}>
-               
                 <Text>Level 1</Text>
               </View>
             </View>
@@ -283,7 +282,7 @@ export default function UserForm({ route }) {
           ></TextInput>
           <Text style={{ height: 20 }}></Text>
           <TouchableOpacity style={styles.button} onPress={addImageWeb}>
-            <Text style={{ fontWeight: 'bold' }} >Create</Text>
+            <Text style={{ fontWeight: "bold" }}>Create</Text>
           </TouchableOpacity>
           <Text style={{ height: 20 }}></Text>
 

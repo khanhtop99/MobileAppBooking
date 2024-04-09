@@ -19,7 +19,7 @@ const Start = () => {
         style={{
           width: windowWidth,
           height: 300,
-          top: 150,
+          top: 100,
         }}
         source={require("../assets/logo.jpg")}
       />
@@ -43,12 +43,12 @@ export default Start;
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    marginVertical: 20,
+    marginVertical: 10,
     marginHorizontal: 20,
     backgroundColor: "white",
     borderRadius: 15,
     paddingVertical: 30,
-    top: 300,
+    top: "25%",
   },
   createButton: {
     fontSize: 26,

@@ -18,10 +18,15 @@ import { getDatabase, ref, set, child, get } from "firebase/database";
 
 import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
+
+import {
+  GestureHandlerRootView,
+  ScrollView as GestureHandlerScrollView,
+} from "react-native-gesture-handler";
 const Login = () => {
   const navigation = useNavigation();
 
-const firebaseConfig = {
+  const firebaseConfig = {
     apiKey: "AIzaSyCicrLXIoWCQd3XvIFoNaUrYpuCRydsgaQ",
     authDomain: "bookingshit-3c16d.firebaseapp.com",
     databaseURL: "https://bookingshit-3c16d-default-rtdb.firebaseio.com",
@@ -55,115 +60,117 @@ const firebaseConfig = {
       });
   }
 
-
   const data = [
-    { label: "Kế toán", value: "1" , form: "Ketoan"},
+    { label: "Kế toán", value: "1", form: "Ketoan" },
     { label: "Cộng tác viên", value: "2", form: "CTV" },
-    { label: "Đại lí", value: "3", form:"Daili"},
-    { label: "Lễ tân", value: "4" , form:"Letan"},
+    { label: "Đại lí", value: "3", form: "Daili" },
+    { label: "Lễ tân", value: "4", form: "Letan" },
   ];
 
   const [value, setValue] = useState(null);
   const [labelling, labellingset] = useState("Letan");
   const [isFocus, setIsFocus] = useState(false);
-const [Pass, SetPass] = useState("C");
+  const [Pass, SetPass] = useState("");
 
   const [username, setUsername] = useState("");
 
   //() => labellingset("Admin");
 
   return (
-    <>
-      <StatusBar backgroundColor="black" />
-      <Text style={{ height: "5%", backgroundColor: "black" }}></Text>
-      <View style={styles.container}>
-        <View style={styles.logoContainer}>
-          <Image
-            source={require("../assets/logo.jpg")}
-            style={styles.logoImage}
-          />
-        </View>
-
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          onChangeText={setUsername}
-          value={username}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-		onChangeText={SetPass}
-value={Pass}
-	
-          secureTextEntry
-        />
-        <Dropdown
-          style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-          data={data}
-          maxHeight={300}
-          labelField="label"
-          valueField="value"
-          placeholder={!isFocus ? "Chọn vai trò" : "..."}
-          value={value}
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
-          onChange={(item) => {
-            setValue(item.value);
-            labellingset(item.form);
-            setIsFocus(false);
-          }}
-          renderLeftIcon={() => (
-            <AntDesign
-              style={styles.icon}
-              color={isFocus ? "blue" : "black"}
-              name="Safety"
-              size={20}
+    <GestureHandlerRootView>
+      <GestureHandlerScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        backgroundColor="black"
+      >
+        <StatusBar backgroundColor="black" />
+        <Text style={{ height: "5%", backgroundColor: "black" }}></Text>
+        <View style={styles.container}>
+          <View style={styles.formContainer}>
+            <Image
+              source={require("../assets/logo.jpg")}
+              style={styles.logoImage}
             />
-          )}
-        />
+          </View>
+          <View style={styles.formContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Username"
+              onChangeText={setUsername}
+              value={username}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              onChangeText={SetPass}
+              value={Pass}
+              secureTextEntry
+            />
+            <Dropdown
+              style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              inputSearchStyle={styles.inputSearchStyle}
+              iconStyle={styles.iconStyle}
+              data={data}
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder={!isFocus ? "Chọn vai trò" : "..."}
+              value={value}
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
+              onChange={(item) => {
+                setValue(item.value);
+                labellingset(item.form);
+                setIsFocus(false);
+              }}
+              renderLeftIcon={() => (
+                <AntDesign
+                  style={styles.icon}
+                  color={isFocus ? "blue" : "black"}
+                  name="Safety"
+                  size={20}
+                />
+              )}
+            />
 
-        <TouchableOpacity
-          onPress={async () =>
-{
- try {
-      const passwording = { val: null };
-      const rolling = { val: null };
-       await read(
-        "User_management/" + username.toString() + "/Account/Password",
-        passwording
-      );
-       await read(
-        "User_management/" + username.toString() + "/Role",
-        rolling
-      );
-console.log(passwording.val+" : s"+value);
-if (passwording.val == Pass && rolling.val == labelling)
-{            navigation.navigate(labelling + "Form", { inputText: username });
-}
-else
-{
-alert("Thông tin chưa chính xác!");
-}
-}
-catch (error)
-{
-	alert("Thông tin chưa chính xác");
-};
-	
-
-}
-          }
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>Log In</Text>
-        </TouchableOpacity>
-      </View>
-    </>
+            <TouchableOpacity
+              onPress={async () => {
+                try {
+                  const passwording = { val: null };
+                  const rolling = { val: null };
+                  await read(
+                    "User_management/" +
+                      username.toString() +
+                      "/Account/Password",
+                    passwording
+                  );
+                  await read(
+                    "User_management/" + username.toString() + "/Role",
+                    rolling
+                  );
+                  console.log(passwording.val + " : s" + value);
+                  if (passwording.val == Pass && rolling.val == labelling) {
+                    navigation.navigate(labelling + "Form", {
+                      inputText: username + ",",
+                    });
+                  } else {
+                    alert("Thông tin chưa chính xác!");
+                  }
+                } catch (error) {
+                  alert("Thông tin chưa chính xác");
+                }
+              }}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>Log In</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={{ height: 450 }}></Text>
+        </View>
+      </GestureHandlerScrollView>
+    </GestureHandlerRootView>
   );
 };
 
@@ -177,13 +184,11 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     position: "relative", // Sử dụng position: "relative" để phần tử con có thể sử dụng position: "absolute" để định v
   },
-  logoContainer: {
-    width: "100%", // Chiếm toàn bộ chiều rộng của màn hình
-    backgroundColor: "black",
+  formContainer: {
+    justifyContent: "center",
     alignItems: "center",
-    position: "absolute", // Định vị phần tử
-    top: 0,
-    paddingBottom: 200, // Chạm vào phía trên cùng của màn hình
+    width: "100%",
+    marginTop: "10%",
   },
   logoImage: {
     width: "100%", // Thay đổi kích thước theo ý của bạn

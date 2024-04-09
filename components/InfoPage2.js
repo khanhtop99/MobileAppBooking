@@ -39,7 +39,7 @@ export default function InfoPage2({ route }) {
   const username = inputText;
 
   const handleBackPress = () => {
-    navigation.navigate("UserForm", { inputText: username });
+    navigation.navigate("CTVForm", { inputText: username + "2" });
   };
 
   const [guestName, setGuestName] = useState("");
@@ -126,6 +126,11 @@ export default function InfoPage2({ route }) {
         hour + "-" + date
       );
       create("/Booking/" + valueBookingData.toString() + "/", "Amount", 0);
+      create(
+        "/Booking/" + valueBookingData.toString() + "/",
+        "Status",
+        "Coming"
+      );
 
       create("/Booking/", "Value", valueBookingData);
 
@@ -205,6 +210,15 @@ export default function InfoPage2({ route }) {
         "0"
       );
       create(
+        "/User_management/" +
+          username.toString() +
+          "/Account/Booking/" +
+          valueUserData.toString() +
+          "/",
+        "Status",
+        "Coming"
+      );
+      create(
         "/User_management/" + username.toString() + "/Account/Booking/",
         "Value",
         valueUserData.toString()
@@ -213,148 +227,161 @@ export default function InfoPage2({ route }) {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {/* Icon "Back" */}
+    <>
       <Text style={{ height: 30, backgroundColor: "#DCDCDC" }}></Text>
-      <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
-        <AntDesign name="arrowleft" size={24} color="black" />
+      <View style={styles.backButton}>
+        <TouchableOpacity onPress={handleBackPress} style={styles.flex_row}>
+          <AntDesign name="arrowleft" size={24} color="black" />
+          {/* Icon "Back" */}
+          <Text style={styles.backButtonText}>Back</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.container}>
         {/* Icon "Back" */}
-        <Text style={styles.backButtonText}>Back</Text>
-      </TouchableOpacity>
-      <Text style={styles.header}>Nuru đẳng cấp bậc nhất Hà Nội</Text>
-      <Image
-        source={require("../assets/images/DSC00194.jpg")} // Assume quyong.jpg is the image file in the same directory
-        style={styles.image}
-      />
 
-      <Text style={styles.paragraph}>
-        Năm 2019, Massage Quý Ông chính thức đi vào hoạt động, đại diện cho một
-        trong những cơ sở Massage đứng top đầu Hà Nội về sự sang trọng và đẳng
-        cấp. Tọa lạc tại vị trí đắc địa tại con phố sầm uất Lê Đức Thọ quận Nam
-        Từ Liêm, thành phố Hà Nội.
-      </Text>
-      <Text style={styles.header}>Qúy Ông Massage</Text>
-      <Image
-        source={require("../assets/images/DSC00212.jpg")} // Assume quyong.jpg is the image file in the same directory
-        style={styles.image}
-      />
-      <Text style={styles.paragraph}>
-        Cơ sở Massage Quý Ông sở hữu chỗ để xe rộng rãi, giao thông thuận tiện.
-        Với quy mô đầu tư cực khủng lên đến 40 phòng, thiết kế đồng bộ đông ấm
-        hè thoáng mát, tiện ích đầy đủ cho các dịch vụ chăm sóc sức khỏe như
-        xông hơi thảo dược, bồn ngâm lá người Dao, bể sục sữa, giường massage
-        thiết kế chuyên biệt…Hệ thống phòng pool party thiết kế độc đáo, bể bơi
-        4 mùa lưu thông sạch sẽ. Cơ sở Quý Ông chúng tôi tự tin là nơi duy nhất
-        có được tầm “View triệu đô”- 4 mặt tiền thoáng đãng, mang đến cho Quý
-        khách trải nghiệm sức khỏe tinh thần và thể chất.
-      </Text>
-      <Image
-        source={require("../assets/images/DSC00205.jpg")} // Assume quyong.jpg is the image file in the same directory
-        style={styles.image}
-      />
-      <Text style={styles.paragraph}>
-        Ngay từ thời điểm đặt chân đến cơ sở, khu vực sảnh tiếp đón lớn, Quý
-        khách dễ dàng trải nghiệm không gian sang trọng, riêng tư. Quý Ông
-        Massage tinh tế bố trí ghế chờ thư giãn thoải mái cùng với đồ uống chào
-        mừng cho Quý khách trong thời gian nán lại sảnh.
-      </Text>
-      <Image
-        source={require("../assets/images/DSC00198.jpg")} // Assume quyong.jpg is the image file in the same directory
-        style={styles.image}
-      />
-      <Text style={styles.paragraph}>
-        Với phương châm “chiều khách hơn chiều người yêu”, Cơ sở chúng tôi luôn
-        biết rằng điểm nhấn quan trọng nhất chính là đội ngũ KTV, vì vậy viêc
-        đầu tư vào khâu tuyển chọn kỹ lưỡng ban đầu, đào tạo chuyên sâu bài bản
-        về kỹ thuật mát xa truyền thống cũng như đáp ứng nhu cầu thư giãn và đặc
-        biệt luôn đổi mới là tiêu chí hàng đầu của Quý Ông massage.
-      </Text>
-      <Image
-        source={require("../assets/images/DSC00227.jpg")} // Assume quyong.jpg is the image file in the same directory
-        style={styles.image}
-      />
-      <Text style={styles.paragraph}>
-        Bên cạnh đó, với đội ngũ chuyên viên tư vấn kinh nghiệm dày dạn sẽ luôn
-        lắng nghe và thấu hiểu Quý khách “như tri kỷ”, có thể thiết kế đúng Gu
-        các nhu cầu, kể cả khắt khe nhất. Ngay từ thời điểm ra mắt đến nay,
-        Massage Quý ông luôn tự hào vì đã chu đáo đón tiếp hàng nghìn lượt khách
-        trong nước và nước ngoài, các đoàn khách du lịch, công tác lớn nhỏ....
-        Chúng tôi cam kết mang lại trải nghiệm thư giãn đẳng cấp nhất, mang lại
-        phong độ sức khỏe tốt nhất cho các Quý Ông sau những khoảng thời gian
-        làm việc căng thẳng.
-      </Text>
+        <Text style={styles.header}>Nuru đẳng cấp bậc nhất Hà Nội</Text>
+        <Image
+          source={require("../assets/images/DSC00194.jpg")} // Assume quyong.jpg is the image file in the same directory
+          style={styles.image}
+        />
 
-      <Text style={[styles.br_40]}></Text>
-      {/* Đặt hàng */}
-      <Text style={{ fontSize: 20, fontWeight: "bold" }}>Đặt Phòng</Text>
-      <View style={[styles.scrollViews, { height: 450 }]}>
-        <Text style={[styles.br_10]}></Text>
-        <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
-          Tên khách hàng
+        <Text style={styles.paragraph}>
+          Năm 2019, Massage Quý Ông chính thức đi vào hoạt động, đại diện cho
+          một trong những cơ sở Massage đứng top đầu Hà Nội về sự sang trọng và
+          đẳng cấp. Tọa lạc tại vị trí đắc địa tại con phố sầm uất Lê Đức Thọ
+          quận Nam Từ Liêm, thành phố Hà Nội.
         </Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setGuestName}
-          value={guestName}
-          placeholder="Tên Khánh Hàng"
-          placeholderTextColor="#888"
+        <Text style={styles.header}>Qúy Ông Massage</Text>
+        <Image
+          source={require("../assets/images/DSC00212.jpg")} // Assume quyong.jpg is the image file in the same directory
+          style={styles.image}
         />
-        <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
-          Số điện thoại
+        <Text style={styles.paragraph}>
+          Cơ sở Massage Quý Ông sở hữu chỗ để xe rộng rãi, giao thông thuận
+          tiện. Với quy mô đầu tư cực khủng lên đến 40 phòng, thiết kế đồng bộ
+          đông ấm hè thoáng mát, tiện ích đầy đủ cho các dịch vụ chăm sóc sức
+          khỏe như xông hơi thảo dược, bồn ngâm lá người Dao, bể sục sữa, giường
+          massage thiết kế chuyên biệt…Hệ thống phòng pool party thiết kế độc
+          đáo, bể bơi 4 mùa lưu thông sạch sẽ. Cơ sở Quý Ông chúng tôi tự tin là
+          nơi duy nhất có được tầm “View triệu đô”- 4 mặt tiền thoáng đãng, mang
+          đến cho Quý khách trải nghiệm sức khỏe tinh thần và thể chất.
         </Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setGuestPhone}
-          value={guestPhone}
-          placeholder="Số điện thoại"
-          placeholderTextColor="#888"
+        <Image
+          source={require("../assets/images/DSC00205.jpg")} // Assume quyong.jpg is the image file in the same directory
+          style={styles.image}
         />
-        <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
-          Số lượng khách
+        <Text style={styles.paragraph}>
+          Ngay từ thời điểm đặt chân đến cơ sở, khu vực sảnh tiếp đón lớn, Quý
+          khách dễ dàng trải nghiệm không gian sang trọng, riêng tư. Quý Ông
+          Massage tinh tế bố trí ghế chờ thư giãn thoải mái cùng với đồ uống
+          chào mừng cho Quý khách trong thời gian nán lại sảnh.
         </Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setGuestQuantity}
-          value={guestQuantity}
-          placeholder="Số lượng khách"
-          placeholderTextColor="#888"
+        <Image
+          source={require("../assets/images/DSC00198.jpg")} // Assume quyong.jpg is the image file in the same directory
+          style={styles.image}
         />
-        <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
-          Ghi chú
+        <Text style={styles.paragraph}>
+          Với phương châm “chiều khách hơn chiều người yêu”, Cơ sở chúng tôi
+          luôn biết rằng điểm nhấn quan trọng nhất chính là đội ngũ KTV, vì vậy
+          viêc đầu tư vào khâu tuyển chọn kỹ lưỡng ban đầu, đào tạo chuyên sâu
+          bài bản về kỹ thuật mát xa truyền thống cũng như đáp ứng nhu cầu thư
+          giãn và đặc biệt luôn đổi mới là tiêu chí hàng đầu của Quý Ông
+          massage.
         </Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setNote}
-          value={note}
-          placeholder="Ghi chú"
-          placeholderTextColor="#888"
+        <Image
+          source={require("../assets/images/DSC00227.jpg")} // Assume quyong.jpg is the image file in the same directory
+          style={styles.image}
         />
-        <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
-          Thời gian
+        <Text style={styles.paragraph}>
+          Bên cạnh đó, với đội ngũ chuyên viên tư vấn kinh nghiệm dày dạn sẽ
+          luôn lắng nghe và thấu hiểu Quý khách “như tri kỷ”, có thể thiết kế
+          đúng Gu các nhu cầu, kể cả khắt khe nhất. Ngay từ thời điểm ra mắt đến
+          nay, Massage Quý ông luôn tự hào vì đã chu đáo đón tiếp hàng nghìn
+          lượt khách trong nước và nước ngoài, các đoàn khách du lịch, công tác
+          lớn nhỏ.... Chúng tôi cam kết mang lại trải nghiệm thư giãn đẳng cấp
+          nhất, mang lại phong độ sức khỏe tốt nhất cho các Quý Ông sau những
+          khoảng thời gian làm việc căng thẳng.
         </Text>
-        <View style={[styles.flex_row, { flex: 1 }]}>
-         
+
+        <Text style={[styles.br_40]}></Text>
+        {/* Đặt hàng */}
+        <Text style={{ fontSize: 20, fontWeight: "bold" }}>Đặt Phòng</Text>
+        <View style={[styles.scrollViews, { height: 450 }]}>
+          <Text style={[styles.br_10]}></Text>
+          <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
+            Tên khách hàng
+          </Text>
           <TextInput
-            style={[styles.input_new, { width: "20%" }]}
-            onChangeText={setDate}
-            value={date}
-            placeholder="01/01/2024-20h30"
+            style={styles.input}
+            onChangeText={setGuestName}
+            value={guestName}
+            placeholder="Tên Khánh Hàng"
             placeholderTextColor="#888"
           />
+          <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
+            Số điện thoại
+          </Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setGuestPhone}
+            value={guestPhone}
+            placeholder="Số điện thoại"
+            placeholderTextColor="#888"
+          />
+          <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
+            Số lượng khách
+          </Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setGuestQuantity}
+            value={guestQuantity}
+            placeholder="Số lượng khách"
+            placeholderTextColor="#888"
+          />
+          <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
+            Ghi chú
+          </Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setNote}
+            value={note}
+            placeholder="Ghi chú"
+            placeholderTextColor="#888"
+          />
+          <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
+            Thời gian
+          </Text>
+          <View style={[styles.flex_row, { flex: 1 }]}>
+            <TextInput
+              style={[styles.input_new, { width: "60%" }]}
+              onChangeText={setHour}
+              value={hour}
+              placeholder="Giờ"
+              placeholderTextColor="#888"
+            />
+            <TextInput
+              style={[styles.input_new, { width: "20%" }]}
+              onChangeText={setDate}
+              value={date}
+              placeholder="Ngày"
+              placeholderTextColor="#888"
+            />
+          </View>
         </View>
-      </View>
-      <View style={styles.container_inside}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.button, styles.secondButton, { width: "50%" }]}
-            onPress={booking}
-          >
-            <Text style={[styles.buttonText]}>Submit</Text>
-          </TouchableOpacity>
+        <View style={styles.container_inside}>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[styles.button, styles.secondButton, { width: "50%" }]}
+              onPress={booking}
+            >
+              <Text style={[styles.buttonText]}>Submit</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-      <Text style={{ height: 100 }}></Text>
-    </ScrollView>
+        <Text style={{ height: 100 }}></Text>
+      </ScrollView>
+    </>
   );
 }
 
@@ -362,8 +389,8 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     marginTop: 50,
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   image: {
@@ -442,8 +469,8 @@ const styles = StyleSheet.create({
   },
   backButton: {
     flexDirection: "row",
-    alignItems: "flex-start",
-    padding: 10,
+    alignItems: "center",
+    padding: 5,
     backgroundColor: "#DCDCDC",
   },
   backButtonText: {

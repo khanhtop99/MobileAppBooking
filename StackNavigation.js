@@ -33,22 +33,22 @@ const StackNavigation = () => {
           component={Login}
           options={{ headerShown: false }}
         />
- <Stack.Screen
+        <Stack.Screen
           name="FormView"
           component={FormView}
           options={{ headerShown: false }}
         />
- <Stack.Screen
+        <Stack.Screen
           name="WebView1"
           component={WebView1}
           options={{ headerShown: false }}
         />
- <Stack.Screen
+        <Stack.Screen
           name="WebView2"
           component={WebView2}
           options={{ headerShown: false }}
         />
- <Stack.Screen
+        <Stack.Screen
           name="WebView3"
           component={WebView3}
           options={{ headerShown: false }}
@@ -69,6 +69,7 @@ const StackNavigation = () => {
           component={AdminForm}
           options={{ headerShown: false }}
         />
+
         <Stack.Screen
           name="CTVForm"
           component={UserForm}
@@ -94,7 +95,7 @@ const StackNavigation = () => {
           component={KetoanForm}
           options={{ headerShown: false }}
         />
-          <Stack.Screen
+        <Stack.Screen
           name="LetanForm"
           component={LetanForm}
           options={{ headerShown: false }}
