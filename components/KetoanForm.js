@@ -48,8 +48,8 @@ export default function UserForm({ route }) {
   const user_name = inputText;
   const ReadOnlyField = ({ label, value }) => (
     <View style={{ padding: 10, fontSize: 20 }}>
-      <Text style={{ fontWeight: 'bold', textAlign:'left'}}>{label} </Text>
-      <Text style={{fontSize:20,fontWeight:'bold'}}>{value}</Text>
+      <Text style={{ fontWeight: "bold", textAlign: "left" }}>{label} </Text>
+      <Text style={{ fontSize: 20, fontWeight: "bold" }}>{value}</Text>
     </View>
   );
 
@@ -279,7 +279,7 @@ export default function UserForm({ route }) {
             onChangeText={setImage}
             style={styles.input}
           ></TextInput>
-          <Text style={{ height: 20  }}></Text>
+          <Text style={{ height: 20 }}></Text>
           <Text>Web URL</Text>
           <TextInput
             value={webUri}
@@ -292,103 +292,125 @@ export default function UserForm({ route }) {
           </TouchableOpacity>
           <Text style={{ height: 20 }}></Text>
 
-          
-
           <Modal
             visible={isModalUpVisible}
             animationType="slide"
             presentationStyle="pageSheet"
           >
-            <View style={styles.modalContainer}>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setIsModalUpVisible(false)}
-              >
-                <Text style={styles.closeButtonText}>X</Text>
-              </TouchableOpacity>
-              <Text style={{ fontSize: 16 }}>Review and Confirm</Text>
+            <GestureHandlerScrollView>
+              <View style={styles.modalContainer}>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setIsModalUpVisible(false)}
+                >
+                  <Text style={styles.closeButtonText}>X</Text>
+                </TouchableOpacity>
+                <Text style={{ fontSize: 16 }}>Review and Confirm</Text>
 
-              {/* Add your modal content here */}
-              <ImageBackground
-                source={require("../assets/logo.jpg")}
-                style={styles.avatar}
-              />
-              <Text style={styles.userNameModal}>
-                {selectedBookingId && listBooking[selectedBookingId].Name}
-              </Text>
-              <Text style={styles.userEmailModal}>
-                {selectedBookingId && listBooking[selectedBookingId].Phone}
-              </Text>
-              <View >
-    {/* sửa biến ở đây */}
-  <View style={[styles.containerDropDown]}>
-    <ReadOnlyField label="Đơn tại:" 
-    value={selectedBookingId && listBooking[selectedBookingId].Name} />
-    </View>
-    
-    <View style={[styles.containerDropDown]}>
-    <ReadOnlyField label="Tên khách hàng:" 
-    value={selectedBookingId && listBooking[selectedBookingId].Name} />
-    </View>
- 
-    <View style={[styles.containerDropDown]}>
-    <ReadOnlyField label="SĐT liên hệ:" 
-    value={selectedBookingId && listBooking[selectedBookingId].Name} />
-    </View>
-
-    <View style={[styles.containerDropDown]}>
-    <ReadOnlyField label="Số lượng khách:" 
-    value={selectedBookingId && listBooking[selectedBookingId].Name} />
-    </View>
-    
-    <View style={[styles.containerDropDown]}>
-    <ReadOnlyField label="Thời gian (vd:01/01/2024-20h30):" 
-    value={selectedBookingId && listBooking[selectedBookingId].Name} />
-    </View>
-
-    <View style={[styles.containerDropDown]}>
-    <ReadOnlyField label="Dịch vụ khác:" 
-    value={selectedBookingId && listBooking[selectedBookingId].Name} />
-    </View>
-    
-    
-  </View>
-
-              <View style={{ marginVertical: "5%" }}>
-                <Text style={{ fontSize: 25, fontWeight: "bold" }}>
-                  Tổng số tiền
+                {/* Add your modal content here */}
+                <ImageBackground
+                  source={require("../assets/logo.jpg")}
+                  style={styles.avatar}
+                />
+                <Text style={styles.userNameModal}>
+                  {selectedBookingId && listBooking[selectedBookingId].Name}
                 </Text>
-              </View>
-              <View
-                style={{
-                  backgroundColor: "#E7E7E7",
-                  width: "60%",
-                  height: 100,
-                  paddingVertical: 35,
-                }}
-              >
-                <TextInput
-                  textAlign="center"
-                  style={{ fontSize: 30 }}
-                  onChangeText={(text) => setOrderAmount(text)} // Update orderAmount when text changes
-                  value={orderAmount} // Set the value of TextInput to orderAmount
-                ></TextInput>
-              </View>
+                <Text style={styles.userEmailModal}>
+                  {selectedBookingId && listBooking[selectedBookingId].Phone}
+                </Text>
+                <View>
+                  {/* sửa biến ở đây */}
+                  <View style={[styles.containerDropDown]}>
+                    <ReadOnlyField
+                      label="Đơn tại:"
+                      value={
+                        selectedBookingId && listBooking[selectedBookingId].Name
+                      }
+                    />
+                  </View>
 
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  onPress={handlePress} // Call handlePress when button is pressed
-                  style={[styles.buttonModal, { backgroundColor: "#009470" }]}
+                  <View style={[styles.containerDropDown]}>
+                    <ReadOnlyField
+                      label="Tên khách hàng:"
+                      value={
+                        selectedBookingId && listBooking[selectedBookingId].Name
+                      }
+                    />
+                  </View>
+
+                  <View style={[styles.containerDropDown]}>
+                    <ReadOnlyField
+                      label="SĐT liên hệ:"
+                      value={
+                        selectedBookingId && listBooking[selectedBookingId].Name
+                      }
+                    />
+                  </View>
+
+                  <View style={[styles.containerDropDown]}>
+                    <ReadOnlyField
+                      label="Số lượng khách:"
+                      value={
+                        selectedBookingId && listBooking[selectedBookingId].Name
+                      }
+                    />
+                  </View>
+
+                  <View style={[styles.containerDropDown]}>
+                    <ReadOnlyField
+                      label="Thời gian (vd:01/01/2024-20h30):"
+                      value={
+                        selectedBookingId && listBooking[selectedBookingId].Name
+                      }
+                    />
+                  </View>
+
+                  <View style={[styles.containerDropDown]}>
+                    <ReadOnlyField
+                      label="Dịch vụ khác:"
+                      value={
+                        selectedBookingId && listBooking[selectedBookingId].Name
+                      }
+                    />
+                  </View>
+                </View>
+
+                <View style={{ marginVertical: "5%" }}>
+                  <Text style={{ fontSize: 25, fontWeight: "bold" }}>
+                    Tổng số tiền
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    backgroundColor: "#E7E7E7",
+                    width: "60%",
+                    height: 100,
+                    paddingVertical: 35,
+                  }}
                 >
-                  <Text style={styles.modalButtonText}>Chấp nhận</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.buttonModal, { backgroundColor: "red" }]}
-                >
-                  <Text style={styles.modalButtonText}>Hủy</Text>
-                </TouchableOpacity>
+                  <TextInput
+                    textAlign="center"
+                    style={{ fontSize: 30 }}
+                    onChangeText={(text) => setOrderAmount(text)} // Update orderAmount when text changes
+                    value={orderAmount} // Set the value of TextInput to orderAmount
+                  ></TextInput>
+                </View>
+
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity
+                    onPress={handlePress} // Call handlePress when button is pressed
+                    style={[styles.buttonModal, { backgroundColor: "#009470" }]}
+                  >
+                    <Text style={styles.modalButtonText}>Chấp nhận</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.buttonModal, { backgroundColor: "red" }]}
+                  >
+                    <Text style={styles.modalButtonText}>Hủy</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
+            </GestureHandlerScrollView>
           </Modal>
 
           <Modal
@@ -396,120 +418,111 @@ export default function UserForm({ route }) {
             animationType="slide"
             presentationStyle="pageSheet"
           >
-            <View style={styles.modalContainer}>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setIsModalDownVisible(false)}
-              >
-                <Text style={styles.closeButtonText}>X</Text>
-              </TouchableOpacity>
-              <Text style={{ fontSize: 16 }}>Thông tin thanh toán</Text>
-
-              {/* Add your modal content here */}
-              <ImageBackground
-                source={require("../assets/logo.jpg")}
-                style={styles.avatar}
-              />
-              <Text style={styles.userNameModal}>
-                {selectedPaymentId && listPayment[selectedPaymentId].Name}
-              </Text>
-              <Text style={styles.userEmailModal}>
-                {selectedPaymentId && listPayment[selectedPaymentId].Number}
-              </Text>
-              
-              
-              <View style={styles.formContainer}>
-  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
-    Tên:
-  </Text>
-  {/* Drop box ở đây */}
-  <View style={[styles.containerDropDown]}>
-    <TextInput
-      style={[styles.detailInput, { width: "90%" }]}
-      placeholder="cả họ và tên"
-    />
-  </View>
-</View>
-
-<View style={styles.formContainer}>
-  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
-    Ngân hàng:
-  </Text>
-  {/* Drop box ở đây */}
-  <View style={[styles.containerDropDown]}>
-    <TextInput
-      style={[styles.detailInput, { width: "90%" }]}
-      placeholder="Chi nhánh"
-    />
-  </View>
-</View>
-
-<View style={styles.formContainer}>
-  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
-    STK
-  </Text>
-  {/* Drop box ở đây */}
-  <View style={[styles.containerDropDown]}>
-    <TextInput
-      style={[styles.detailInput,{ width: "90%" }]}
-    />
-  </View>
-</View>
-
-<View style={styles.formContainer}>
-  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
-    Thời gian
-  </Text>
-  {/* Drop box ở đây */}
-  <View style={[styles.containerDropDown]}>
-    <TextInput
-      style={[styles.detailInput, { width: "90%" }]}
-      placeholder="11/12/2023"
-    />
-  </View>
-</View>
-
-
-
- 
-
-    
-
-
-<View style={{ marginVertical: "5%" }}>
-  <Text style={{ fontSize: 25, fontWeight: "bold" }}>
-    Tổng số tiền
-  </Text>
-</View>
-
-              <View
-                style={{
-                  backgroundColor: "#E7E7E7",
-                  width: "60%",
-                  height: 100,
-                  paddingVertical: 35,
-                }}
-              >
-                <TextInput
-                  textAlign="center"
-                  style={{ fontSize: 30 }}
-                ></TextInput>
-              </View>
-
-              <View style={styles.buttonContainer}>
+            <GestureHandlerScrollView>
+              <View style={styles.modalContainer}>
                 <TouchableOpacity
-                  style={[styles.buttonModal, { backgroundColor: "#009470" }]}
+                  style={styles.closeButton}
+                  onPress={() => setIsModalDownVisible(false)}
                 >
-                  <Text style={styles.modalButtonText}>Chấp nhận</Text>
+                  <Text style={styles.closeButtonText}>X</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.buttonModal, { backgroundColor: "red" }]}
+                <Text style={{ fontSize: 16 }}>Thông tin thanh toán</Text>
+
+                {/* Add your modal content here */}
+                <ImageBackground
+                  source={require("../assets/logo.jpg")}
+                  style={styles.avatar}
+                />
+                <Text style={styles.userNameModal}>
+                  {selectedPaymentId && listPayment[selectedPaymentId].Name}
+                </Text>
+                <Text style={styles.userEmailModal}>
+                  {selectedPaymentId && listPayment[selectedPaymentId].Number}
+                </Text>
+
+                <View style={styles.formContainer}>
+                  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
+                    Tên:
+                  </Text>
+                  {/* Drop box ở đây */}
+                  <View style={[styles.containerDropDown]}>
+                    <TextInput
+                      style={[styles.detailInput, { width: "90%" }]}
+                      placeholder="cả họ và tên"
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.formContainer}>
+                  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
+                    Ngân hàng:
+                  </Text>
+                  {/* Drop box ở đây */}
+                  <View style={[styles.containerDropDown]}>
+                    <TextInput
+                      style={[styles.detailInput, { width: "90%" }]}
+                      placeholder="Chi nhánh"
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.formContainer}>
+                  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
+                    STK
+                  </Text>
+                  {/* Drop box ở đây */}
+                  <View style={[styles.containerDropDown]}>
+                    <TextInput style={[styles.detailInput, { width: "90%" }]} />
+                  </View>
+                </View>
+
+                <View style={styles.formContainer}>
+                  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
+                    Thời gian
+                  </Text>
+                  {/* Drop box ở đây */}
+                  <View style={[styles.containerDropDown]}>
+                    <TextInput
+                      style={[styles.detailInput, { width: "90%" }]}
+                      placeholder="11/12/2023"
+                    />
+                  </View>
+                </View>
+
+                <View style={{ marginVertical: "5%" }}>
+                  <Text style={{ fontSize: 25, fontWeight: "bold" }}>
+                    Tổng số tiền
+                  </Text>
+                </View>
+
+                <View
+                  style={{
+                    backgroundColor: "#E7E7E7",
+                    width: "60%",
+                    height: 100,
+                    paddingVertical: 35,
+                  }}
                 >
-                  <Text style={styles.modalButtonText}>Hủy</Text>
-                </TouchableOpacity>
+                  <TextInput
+                    textAlign="center"
+                    style={{ fontSize: 30 }}
+                  ></TextInput>
+                </View>
+
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity
+                    style={[styles.buttonModal, { backgroundColor: "#009470" }]}
+                  >
+                    <Text style={styles.modalButtonText}>Chấp nhận</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.buttonModal, { backgroundColor: "red" }]}
+                  >
+                    <Text style={styles.modalButtonText}>Hủy</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-            
+            </GestureHandlerScrollView>
           </Modal>
         </GestureHandlerScrollView>
       </GestureHandlerRootView>
