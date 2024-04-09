@@ -46,6 +46,12 @@ const database = getDatabase(app);
 export default function UserForm({ route }) {
   const { inputText } = route.params;
   const user_name = inputText;
+  const ReadOnlyField = ({ label, value }) => (
+    <View style={{ padding: 10, fontSize: 20 }}>
+      <Text style={{ fontWeight: 'bold', textAlign:'left'}}>{label} </Text>
+      <Text style={{fontSize:20,fontWeight:'bold'}}>{value}</Text>
+    </View>
+  );
 
   const [listBooking, setListBooking] = useState([]);
   const [listPayment, setListPayment] = useState([]);
@@ -273,7 +279,7 @@ export default function UserForm({ route }) {
             onChangeText={setImage}
             style={styles.input}
           ></TextInput>
-          <Text style={{ height: 20 }}></Text>
+          <Text style={{ height: 20  }}></Text>
           <Text>Web URL</Text>
           <TextInput
             value={webUri}
@@ -286,14 +292,7 @@ export default function UserForm({ route }) {
           </TouchableOpacity>
           <Text style={{ height: 20 }}></Text>
 
-          <View style={styles.flex}>
-            <ImageBackground
-              source={require("../assets/images/DSC00791.jpg")}
-              style={[
-                { width: 250, height: 400, marginLeft: 20, marginRight: 20 },
-              ]}
-            ></ImageBackground>
-          </View>
+          
 
           <Modal
             visible={isModalUpVisible}
@@ -320,61 +319,40 @@ export default function UserForm({ route }) {
               <Text style={styles.userEmailModal}>
                 {selectedBookingId && listBooking[selectedBookingId].Phone}
               </Text>
+              <View >
+    {/* sửa biến ở đây */}
+  <View style={[styles.containerDropDown]}>
+    <ReadOnlyField label="Đơn tại:" 
+    value={selectedBookingId && listBooking[selectedBookingId].Name} />
+    </View>
+    
+    <View style={[styles.containerDropDown]}>
+    <ReadOnlyField label="Tên khách hàng:" 
+    value={selectedBookingId && listBooking[selectedBookingId].Name} />
+    </View>
+ 
+    <View style={[styles.containerDropDown]}>
+    <ReadOnlyField label="SĐT liên hệ:" 
+    value={selectedBookingId && listBooking[selectedBookingId].Name} />
+    </View>
 
-              <View style={styles.dropdownContainer}>
-                <Text style={{ padding: 10, fontSize: 16, marginLeft: 10 }}>
-                  Đơn tại:
-                </Text>
-                {/* Drop box ở đây */}
-                <View style={[styles.containerDropDown, styles.flex_row]}>
-                  <Dropdown
-                    style={[
-                      styles.dropdown,
-                      isFocus && { borderColor: "blue" },
-                    ]}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={data}
-                    search
-                    maxHeight={300}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={!isFocus ? "Select item" : "..."}
-                    searchPlaceholder="Search..."
-                    value={value}
-                    onFocus={() => setIsFocus(true)}
-                    onBlur={() => setIsFocus(false)}
-                    onChange={(item) => {
-                      setValue(item.value);
-                      setIsFocus(false);
-                    }}
-                    renderLeftIcon={() => (
-                      <AntDesign
-                        style={styles.icon}
-                        color={isFocus ? "blue" : "black"}
-                        name="Safety"
-                        size={20}
-                      />
-                    )}
-                  />
-                </View>
-              </View>
+    <View style={[styles.containerDropDown]}>
+    <ReadOnlyField label="Số lượng khách:" 
+    value={selectedBookingId && listBooking[selectedBookingId].Name} />
+    </View>
+    
+    <View style={[styles.containerDropDown]}>
+    <ReadOnlyField label="Thời gian (vd:01/01/2024-20h30):" 
+    value={selectedBookingId && listBooking[selectedBookingId].Name} />
+    </View>
 
-              <View style={styles.dropdownContainer}>
-                <Text style={{ padding: 10, fontSize: 16, marginLeft: 26 }}>
-                  Chi tiết:
-                </Text>
-                {/* Drop box ở đây */}
-                <View style={[styles.containerDropDown, styles.flex_row]}>
-                  <TextInput
-                    onChange={(text) => {}}
-                    style={styles.detailInput}
-                    placeholder="nhập nội dung chi tiết"
-                  ></TextInput>
-                </View>
-              </View>
+    <View style={[styles.containerDropDown]}>
+    <ReadOnlyField label="Dịch vụ khác:" 
+    value={selectedBookingId && listBooking[selectedBookingId].Name} />
+    </View>
+    
+    
+  </View>
 
               <View style={{ marginVertical: "5%" }}>
                 <Text style={{ fontSize: 25, fontWeight: "bold" }}>
@@ -425,7 +403,7 @@ export default function UserForm({ route }) {
               >
                 <Text style={styles.closeButtonText}>X</Text>
               </TouchableOpacity>
-              <Text style={{ fontSize: 16 }}>Review and Confirm</Text>
+              <Text style={{ fontSize: 16 }}>Thông tin thanh toán</Text>
 
               {/* Add your modal content here */}
               <ImageBackground
@@ -438,61 +416,72 @@ export default function UserForm({ route }) {
               <Text style={styles.userEmailModal}>
                 {selectedPaymentId && listPayment[selectedPaymentId].Number}
               </Text>
-
+              
+              
               <View style={styles.formContainer}>
-                <Text style={{ padding: 10, fontSize: 16, marginLeft: 26 }}>
-                  Tên:
-                </Text>
-                {/* Drop box ở đây */}
-                <View style={[styles.containerDropDown]}>
-                  <TextInput
-                    style={[styles.detailInput]}
-                    placeholder="cả họ và tên"
-                  ></TextInput>
-                </View>
-              </View>
+  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
+    Tên:
+  </Text>
+  {/* Drop box ở đây */}
+  <View style={[styles.containerDropDown]}>
+    <TextInput
+      style={[styles.detailInput, { width: "90%" }]}
+      placeholder="cả họ và tên"
+    />
+  </View>
+</View>
 
-              <View style={styles.formContainer}>
-                <Text style={{ padding: 10, fontSize: 16, marginLeft: 26 }}>
-                  Ngân hàng:
-                </Text>
-                {/* Drop box ở đây */}
-                <View style={[styles.containerDropDown]}>
-                  <TextInput
-                    style={[styles.detailInput, { width: "82%" }]}
-                    placeholder="Chi nhánh"
-                  ></TextInput>
-                </View>
-              </View>
+<View style={styles.formContainer}>
+  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
+    Ngân hàng:
+  </Text>
+  {/* Drop box ở đây */}
+  <View style={[styles.containerDropDown]}>
+    <TextInput
+      style={[styles.detailInput, { width: "90%" }]}
+      placeholder="Chi nhánh"
+    />
+  </View>
+</View>
 
-              <View style={styles.formContainer}>
-                <Text style={{ padding: 10, fontSize: 16, marginLeft: 26 }}>
-                  STK
-                </Text>
-                {/* Drop box ở đây */}
-                <View style={[styles.containerDropDown]}>
-                  <TextInput style={[styles.detailInput]}></TextInput>
-                </View>
-              </View>
+<View style={styles.formContainer}>
+  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
+    STK
+  </Text>
+  {/* Drop box ở đây */}
+  <View style={[styles.containerDropDown]}>
+    <TextInput
+      style={[styles.detailInput,{ width: "90%" }]}
+    />
+  </View>
+</View>
 
-              <View style={styles.formContainer}>
-                <Text style={{ padding: 10, fontSize: 16, marginLeft: 26 }}>
-                  Thời gian
-                </Text>
-                {/* Drop box ở đây */}
-                <View style={[styles.containerDropDown]}>
-                  <TextInput
-                    style={[styles.detailInput, { width: "84.3%" }]}
-                    placeholder="11/12/2023"
-                  ></TextInput>
-                </View>
-              </View>
+<View style={styles.formContainer}>
+  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
+    Thời gian
+  </Text>
+  {/* Drop box ở đây */}
+  <View style={[styles.containerDropDown]}>
+    <TextInput
+      style={[styles.detailInput, { width: "90%" }]}
+      placeholder="11/12/2023"
+    />
+  </View>
+</View>
 
-              <View style={{ marginVertical: "5%" }}>
-                <Text style={{ fontSize: 25, fontWeight: "bold" }}>
-                  Tổng số tiền
-                </Text>
-              </View>
+
+
+ 
+
+    
+
+
+<View style={{ marginVertical: "5%" }}>
+  <Text style={{ fontSize: 25, fontWeight: "bold" }}>
+    Tổng số tiền
+  </Text>
+</View>
+
               <View
                 style={{
                   backgroundColor: "#E7E7E7",
@@ -520,6 +509,7 @@ export default function UserForm({ route }) {
                 </TouchableOpacity>
               </View>
             </View>
+            
           </Modal>
         </GestureHandlerScrollView>
       </GestureHandlerRootView>
