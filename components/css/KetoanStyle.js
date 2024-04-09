@@ -1,6 +1,24 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
+  input: {
+    height: 50,
+    backgroundColor: "#eee",
+    borderRadius: 30,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    borderColor: "black", // Màu của border
+    borderWidth: 1, // Độ dày của border}
+  },
+ button: {
+    backgroundColor: '#ADD8E6',
+    padding: 10,
+    width: 150, // Đặt chiều rộng là 150px
+    alignItems: "center", // Căn giữa theo chiều ngang
+    justifyContent: "center", // Căn giữa theo chiều dọc
+    margin: 5,
+},
+
   br_40: {
     height: 40,
   },
@@ -53,13 +71,7 @@ const styles = StyleSheet.create({
     flexDirection: "row", // Hiển thị các button theo hàng ngang
     paddingHorizontal: 15, // Khoảng cách giữa các nút
   },
-  button: {
-    backgroundColor: '#ADD8E6',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    margin: 5,
-  },
+
   secondButton: {
     backgroundColor: "green", // Màu của button thứ hai
     width: "27%",
@@ -82,15 +94,7 @@ const styles = StyleSheet.create({
     top: 5, // Đặt vị trí của văn bản ở trên cùng của block
     right: 5, // Đặt vị trí của văn bản ở phía bên phải của block
   },
-  input: {
-    height: 50,
-    backgroundColor: "#eee",
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-    borderColor: "black", // Màu của border
-    borderWidth: 1, // Độ dày của border
-  },
+
   input_new: {
     flex: 1,
     height: 50,
@@ -195,6 +199,7 @@ const styles = StyleSheet.create({
     marginTop: "8%",
   },
   containerDropDown: {
+    
     backgroundColor: "white",
     flexDirection: "row",
   },
@@ -223,8 +228,7 @@ const styles = StyleSheet.create({
   },
   modalButtonText: { fontSize: 18, color: "white", fontWeight: "bold" },
   formContainer: {
-    flexDirection: "row",
-    marginTop: "3%",
+    marginTop: "1%",
   },
 });
 
