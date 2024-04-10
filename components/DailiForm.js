@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
-import QRCode from 'react-native-qrcode-svg';
+import QRCode from "react-native-qrcode-svg";
 
 import {
   ActivityIndicator,
@@ -31,7 +31,7 @@ export default function UserForm({ route }) {
   const windowHeight = Dimensions.get("window").height;
   const [activeIndex, setActiveIndex] = useState(0);
   const flatlistRef = useRef();
-  
+
   const navigation = useNavigation();
 
   const { inputText } = route.params;
@@ -253,23 +253,24 @@ export default function UserForm({ route }) {
           break;
         default:
           break;
-      }};
-      
+      }
+    };
+
     return (
       <View style={{ paddingHorizontal: 30 }}>
         {/* Thêm margin horizontal */}
         <View style={{ width: windowWidth - 60 }}>
           {/* Trừ đi tổng margin */}
           <TouchableOpacity onPress={handleImagePress}>
-        <Image
-          source={item.image}
-          style={{
-            height: 200,
-            width: windowWidth - 60,
-            borderRadius: 10, // Trừ đi tổng margin
-          }}
-        />
-      </TouchableOpacity>
+            <Image
+              source={item.image}
+              style={{
+                height: 200,
+                width: windowWidth - 60,
+                borderRadius: 10, // Trừ đi tổng margin
+              }}
+            />
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -284,7 +285,6 @@ export default function UserForm({ route }) {
       }
     });
   };
-  
 
   return (
     <>
@@ -303,22 +303,21 @@ export default function UserForm({ route }) {
               source={require("../assets/logo.jpg")}
               style={styles.logo}
             ></ImageBackground>
-<Text style={[styles.br_60]}></Text>
-          {/* swipeable */}
-          <FlatList
-            data={carouselData}
-            ref={flatlistRef}
-            getItemLayout={getItemLayout}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            horizontal={true}
-            pagingEnabled={true}
-            onScroll={handleScroll}
-            showsHorizontalScrollIndicator={false}
-          />
-          <Text style={[styles.br_20]}></Text>
-          <View style={styles.dotIndicator}>{renderDotIndicator()}</View>
-
+            <Text style={[styles.br_60]}></Text>
+            {/* swipeable */}
+            <FlatList
+              data={carouselData}
+              ref={flatlistRef}
+              getItemLayout={getItemLayout}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              horizontal={true}
+              pagingEnabled={true}
+              onScroll={handleScroll}
+              showsHorizontalScrollIndicator={false}
+            />
+            <Text style={[styles.br_20]}></Text>
+            <View style={styles.dotIndicator}>{renderDotIndicator()}</View>
 
             <ImageBackground
               source={require("../assets/images/tra.png")}
@@ -335,9 +334,7 @@ export default function UserForm({ route }) {
                 style={[styles.button, styles.firstButton]}
                 onPress={handlePress}
               >
-                <Text style={[styles.buttonText]}>
-                  Tiền hiện tại: {total.val.Amount_remain}{" "}
-                </Text>
+                <Text style={[styles.buttonText]}>Tiền hiện tại:</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.button, styles.secondButton]}
@@ -393,19 +390,19 @@ export default function UserForm({ route }) {
             </GestureHandlerScrollView>
           </View>
 
-
-
           <Text style={[styles.br_40]}></Text>
           <Text style={{ fontSize: 18, fontWeight: "bold", marginLeft: 20 }}>
             Mã QR của tôi
           </Text>
           <Text style={[styles.br_20]}></Text>
-<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <QRCode
-value={`https://bookingshit-3c16d.web.app/?xxx=${user_name}`}// the string you want to encode as QR code
-  size={200} // adjust the size of the QR code
-      />
-    </View>          
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <QRCode
+              value={`https://bookingshit-3c16d.web.app/?xxx=${user_name}`} // the string you want to encode as QR code
+              size={200} // adjust the size of the QR code
+            />
+          </View>
           <Text style={[styles.br_30]}></Text>
         </GestureHandlerScrollView>
       </GestureHandlerRootView>

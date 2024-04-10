@@ -110,10 +110,14 @@ const Register = () => {
       //Add data to database
       addData();
       // Navigate to the next screen
-      Alert.alert(
-        "Success",
-        "Bạn đã đăng ký thành công! Hãy kiểm tra địa chỉ email nhé!"
-      );
+      Alert.alert("Bạn có chắc chắn muốn chấp nhận đơn không?", "", [
+        {
+          text: "OK",
+          onPress: () => {
+            navigation.navigate("Home");
+          },
+        },
+      ]);
     }
   };
 
@@ -164,7 +168,10 @@ const Register = () => {
       gender
     );
     setDataToLocation("/User_management/" + username + "/Account/Phone", phone);
-
+    setDataToLocation(
+      "/User_management/" + username + "/Account/Booking/Value",
+      0
+    );
     setDataToLocation(
       "/User_management/" + username + "/Agency/Amount_Total",
       "0"
@@ -263,7 +270,6 @@ const Register = () => {
           <TextInput
             style={styles.input}
             placeholder="Phone"
-            secureTextEntry
             onChangeText={setPhone}
             value={phone}
           />
