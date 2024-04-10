@@ -63,6 +63,10 @@ export default function UserForm({ route }) {
   const [ctvName, setCTVName] = useState("");
   const [ctvPhone, setCTVPhone] = useState("");
 
+  const [ctvRemain, setCTVRemain] = useState("");
+
+  const [ctvAmount, setCTVAmount] = useState(0);
+
   const [image, setImage] = useState("");
   const [webUri, setWebUri] = useState("");
 
@@ -98,7 +102,6 @@ export default function UserForm({ route }) {
       if (snapshotBooking.exists() && snapshotPayment.exists()) {
         setListBooking(snapshotBooking.val());
         setListPayment(snapshotPayment.val());
-        console.log(snapshotBooking.val());
       } else {
         console.log("No data available");
       }
@@ -125,7 +128,7 @@ export default function UserForm({ route }) {
     }
   };
 
-  const getCTVPhone = async (bookingID) => {
+  const getCTVPhoneBooking = async (bookingID) => {
     let valueUsername = { val: null };
     let valuePhone = { val: null };
     await read("/Booking/" + bookingID + "/Account", valueUsername);
@@ -137,15 +140,37 @@ export default function UserForm({ route }) {
     setCTVPhone(valuePhone.val);
   };
 
+  const getCTVPhonePayment = async (paymentID) => {
+    let valueUsername = { val: null };
+    let valuePhone = { val: null };
+    let valueRemain = { val: null };
+    let valueAmount = { val: null };
+    await read("/Payment/" + paymentID + "/Username", valueUsername);
+    setCTVName(valueUsername.val);
+    await read("/Payment/" + paymentID + "/Amount", valueAmount);
+    setCTVAmount(valueAmount.val);
+    await read(
+      "/User_management/" + valueUsername.val + "/Account/Phone/",
+      valuePhone
+    );
+    setCTVPhone(valuePhone.val);
+    await read(
+      "/User_management/" + valueUsername.val + "/Agency/Amount_Remain",
+      valueRemain
+    );
+    setCTVRemain(valueRemain.val);
+  };
+
   const handleMoreUpPress = (bookingId) => {
     setSelectedBookingId(bookingId);
-    getCTVPhone(bookingId);
+    getCTVPhoneBooking(bookingId);
     setIsModalUpVisible(true);
   };
 
   const handleMoreDownPress = (paymentID) => {
     setSelectedPaymentId(paymentID);
     setIsModalDownVisible(true);
+    getCTVPhonePayment(paymentID);
   };
 
   const handleClose = () => {
@@ -155,11 +180,22 @@ export default function UserForm({ route }) {
 
   const handleAccept = async () => {
     var valueUser = { val: null };
+    var valueAmountTotal = { val: null };
+    var valueAmountRemain = { val: null };
     await read(
       "/Booking/" + selectedBookingId.toString() + "/IDUser",
       valueUser
     );
-    console.log(valueUser.val);
+
+    await read(
+      "/User_management/" + ctvName + "/Agency/Amount_Total",
+      valueAmountTotal
+    );
+
+    await read(
+      "/User_management/" + ctvName + "/Agency/Amount_Remain",
+      valueAmountRemain
+    );
 
     if (orderAmount !== null) {
       Alert.alert("Bạn có chắc chắn muốn chấp nhận đơn không?", "", [
@@ -182,6 +218,8 @@ export default function UserForm({ route }) {
               "Purchase"
             );
 
+            //add in user_management
+            //Booking
             create(
               "/User_management/" +
                 ctvName +
@@ -202,6 +240,18 @@ export default function UserForm({ route }) {
               "Purchase"
             );
 
+            //Agency
+            create(
+              "/User_management/" + ctvName + "/Agency/",
+              "Amount_Total",
+              orderAmount / 10000 + valueAmountTotal.val
+            );
+
+            create(
+              "/User_management/" + ctvName + "/Agency/",
+              "Amount_Remain",
+              orderAmount / 10000 + valueAmountRemain.val
+            );
             Alert.alert("Xác nhận đơn thành công");
             setCTVName("");
             setCTVPhone("");
@@ -212,6 +262,33 @@ export default function UserForm({ route }) {
     } else {
       Alert.alert("Hãy nhập số tiền");
     }
+  };
+
+  const handleAcceptPayment = async () => {
+    var valuePaymentRemain = { val: null };
+
+    await read(
+      "/User_management/" + ctvName + "/Agency/Amount_Remain",
+      valuePaymentRemain
+    );
+
+    Alert.alert("Bạn có chắc chắn muốn chấp nhận đơn không?", "", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "OK",
+        onPress: () => {
+          create(
+            "/User_management/" + ctvName + "/Agency/",
+            "Amount_Remain",
+            valuePaymentRemain.val - ctvAmount
+          );
+          create("/Payment/" + selectedPaymentId + "/", "Status", "Done");
+        },
+      },
+    ]);
   };
 
   const parseTimeString = (timeString) => {
@@ -365,20 +442,38 @@ export default function UserForm({ route }) {
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.scrollViewContent}
             >
-              {Object.keys(listPayment).map((paymentKey) => (
-                <View style={styles.item} key={paymentKey}>
-                  <Text style={styles.title}>
-                    {listPayment[paymentKey].Name}
-                  </Text>
-                  <TouchableOpacity
-                    style={styles.moreButton}
-                    onPress={() => handleMoreDownPress(paymentKey)}
+              {Object.keys(listPayment)
+                .filter((paymentKey) => paymentKey !== "Value")
+                .map((paymentKey) => (
+                  <View
+                    style={[
+                      styles.item,
+                      {
+                        backgroundColor:
+                          listPayment[paymentKey].Status === "Pending"
+                            ? "white"
+                            : "green",
+                      },
+                    ]}
+                    key={paymentKey}
                   >
-                    <Text style={styles.moreButtonText}>More</Text>
-                    {/* Icon cho nút More có thể thêm vào đây */}
-                  </TouchableOpacity>
-                </View>
-              ))}
+                    <View style={{ flexDirection: "column" }}>
+                      <Text style={styles.title}>
+                        {listPayment[paymentKey].Name}
+                      </Text>
+                      <Text style={styles.title}>
+                        {listPayment[paymentKey].Username}
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      style={styles.moreButton}
+                      onPress={() => handleMoreDownPress(paymentKey)}
+                    >
+                      <Text style={styles.moreButtonText}>More</Text>
+                      {/* Icon cho nút More có thể thêm vào đây */}
+                    </TouchableOpacity>
+                  </View>
+                ))}
             </GestureHandlerScrollView>
           </View>
 
@@ -544,83 +639,56 @@ export default function UserForm({ route }) {
                   style={styles.avatar}
                 />
                 <Text style={styles.userNameModal}>
-                  {selectedPaymentId && listPayment[selectedPaymentId].Name}
+                  {selectedPaymentId && listPayment[selectedPaymentId].Username}
                 </Text>
-                <Text style={styles.userEmailModal}>
-                  {selectedPaymentId && listPayment[selectedPaymentId].Number}
-                </Text>
-
-                <View style={styles.formContainer}>
-                  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
-                    Tên:
-                  </Text>
-                  {/* Drop box ở đây */}
+                <Text style={styles.userEmailModal}>{ctvPhone}</Text>
+                <View>
                   <View style={[styles.containerDropDown]}>
-                    <TextInput
-                      style={[styles.detailInput, { width: "90%" }]}
-                      placeholder="cả họ và tên"
+                    <ReadOnlyField
+                      label="Tên tài khoản"
+                      value={
+                        selectedPaymentId && listPayment[selectedPaymentId].Name
+                      }
                     />
                   </View>
-                </View>
 
-                <View style={styles.formContainer}>
-                  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
-                    Ngân hàng:
-                  </Text>
-                  {/* Drop box ở đây */}
                   <View style={[styles.containerDropDown]}>
-                    <TextInput
-                      style={[styles.detailInput, { width: "90%" }]}
-                      placeholder="Chi nhánh"
+                    <ReadOnlyField
+                      label="Ngân Hàng"
+                      value={
+                        selectedPaymentId && listPayment[selectedPaymentId].Bank
+                      }
                     />
                   </View>
-                </View>
 
-                <View style={styles.formContainer}>
-                  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
-                    STK
-                  </Text>
-                  {/* Drop box ở đây */}
                   <View style={[styles.containerDropDown]}>
-                    <TextInput style={[styles.detailInput, { width: "90%" }]} />
-                  </View>
-                </View>
-
-                <View style={styles.formContainer}>
-                  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
-                    Thời gian
-                  </Text>
-                  {/* Drop box ở đây */}
-                  <View style={[styles.containerDropDown]}>
-                    <TextInput
-                      style={[styles.detailInput, { width: "90%" }]}
-                      placeholder="11/12/2023"
+                    <ReadOnlyField
+                      label="STK"
+                      value={
+                        selectedPaymentId &&
+                        listPayment[selectedPaymentId].Number
+                      }
                     />
                   </View>
-                </View>
 
-                <View style={{ marginVertical: "5%" }}>
-                  <Text style={{ fontSize: 25, fontWeight: "bold" }}>
-                    Tổng số tiền
-                  </Text>
-                </View>
+                  <View style={[styles.containerDropDown]}>
+                    <ReadOnlyField
+                      label="Số điểm muốn rút"
+                      value={
+                        selectedPaymentId &&
+                        listPayment[selectedPaymentId].Amount
+                      }
+                    />
+                  </View>
 
-                <View
-                  style={{
-                    backgroundColor: "#E7E7E7",
-                    width: "60%",
-                    height: 100,
-                    paddingVertical: 35,
-                  }}
-                >
-                  <TextInput
-                    textAlign="center"
-                    style={{ fontSize: 30 }}
-                  ></TextInput>
+                  <View style={[styles.containerDropDown]}>
+                    <ReadOnlyField label="Số điểm hiện tại" value={ctvRemain} />
+                  </View>
                 </View>
 
                 <View style={styles.buttonContainer}>
                   <TouchableOpacity
+                    onPress={handleAcceptPayment}
                     style={[styles.buttonModal, { backgroundColor: "#009470" }]}
                   >
                     <Text style={styles.modalButtonText}>Chấp nhận</Text>

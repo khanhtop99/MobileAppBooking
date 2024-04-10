@@ -7,15 +7,13 @@ import {
   View,
   Text,
   ImageBackground,
-  ScrollView,
-  Button,
   TouchableOpacity,
   TextInput,
-  Alert,
-  StyleSheet,
   FlatList,
   Dimensions,
   Image,
+  Modal,
+  Alert,
 } from "react-native";
 import styles from "./css/FormUserStyle";
 import {
@@ -142,6 +140,17 @@ export default function UserForm({ route }) {
   const [remain, Amount_remain] = useState({ val: null });
   const [total, set_total] = useState({ val: null });
   const [dataFetched, setDataFetched] = useState(false);
+
+  const [isModalDownVisible, setIsModalDownVisible] = useState(false);
+  const [ctvPhone, setCTVPhone] = useState("");
+  const [ctvRemain, setCTVRemain] = useState(0);
+
+  const [ctvName, setCTVName] = useState("");
+  const [ctvBank, setCTVBank] = useState("");
+  const [ctvSTK, setCTVSTK] = useState("");
+
+  const [point, setPoint] = useState("");
+
   const donHangTichLuy = async () => {
     try {
       const donHangData = { val: null };
@@ -240,6 +249,100 @@ export default function UserForm({ route }) {
         return <View key={index} style={styles.dot}></View>;
       }
     });
+  };
+
+  const getCTVPhone = async () => {
+    let valuePhone = { val: null };
+    await read("/User_management/" + user_name + "/Account/Phone/", valuePhone);
+    setCTVPhone(valuePhone.val);
+  };
+
+  const getCTVCurrentPoint = async () => {
+    let valueRemain = { val: null };
+    await read(
+      "/User_management/" + user_name + "/Agency/Amount_Remain/",
+      valueRemain
+    );
+    setCTVRemain(valueRemain.val);
+  };
+
+  const handleMoreDownPress = () => {
+    setIsModalDownVisible(true);
+    getCTVPhone();
+    getCTVCurrentPoint();
+  };
+
+  function create(path, name, value) {
+    set(ref(database, path + name), value);
+  }
+
+  const handleWithdraw = async () => {
+    if (point > ctvRemain - 200) {
+      Alert.alert(
+        "Số điểm nhập quá lớn (Cần tối thiểu 200 điểm để duy trì tài khoản)\nVui lòng nhập lại"
+      );
+    } else {
+      var valuePayment = { val: null };
+      await read("Payment/Value", valuePayment);
+      var valuePaymentData = parseInt(valuePayment.val);
+      if (valuePaymentData > 1000) {
+        valuePaymentData = 0;
+      }
+      valuePaymentData += 1;
+
+      try {
+        create(
+          "/Payment/" + valuePaymentData.toString() + "/",
+          "Amount",
+          point
+        );
+        create(
+          "/Payment/" + valuePaymentData.toString() + "/",
+          "Bank",
+          ctvBank
+        );
+        create(
+          "/Payment/" + valuePaymentData.toString() + "/",
+          "Name",
+          ctvName
+        );
+        create(
+          "/Payment/" + valuePaymentData.toString() + "/",
+          "Number",
+          ctvSTK
+        );
+        create(
+          "/Payment/" + valuePaymentData.toString() + "/",
+          "Status",
+          "Pending"
+        );
+        create(
+          "/Payment/" + valuePaymentData.toString() + "/",
+          "Username",
+          user_name
+        );
+        create("/Payment/", "Value", valuePaymentData);
+
+        Alert.alert("Đơn xác nhận rút tiền đã gửi thành công", "", [
+          {
+            text: "OK",
+            onPress: () => {
+              setIsModalDownVisible(false);
+              resetForm();
+            },
+          },
+        ]);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const resetForm = () => {
+    setCTVName("");
+    setCTVBank("");
+    setCTVSTK("");
+    setPoint("");
   };
 
   return (
@@ -416,10 +519,10 @@ export default function UserForm({ route }) {
           <View style={styles.flex_row}>
             <View style={styles.flex_column}>
               <Text style={[styles.br_20]}></Text>
-              <Text style={{ fontSize: 20 }}>Tên người dùng:{user_name}</Text>
+              <Text style={{ fontSize: 20 }}>Tên người dùng: {user_name}</Text>
               <View style={styles.flex_row}>
                 <Text style={{ fontSize: 20 }}>
-                  Cấp độ hiện tại:{total.val.Amount_Total}
+                  Cấp độ hiện tại: {total.val.Amount_Total}
                 </Text>
               </View>
             </View>
@@ -437,7 +540,7 @@ export default function UserForm({ route }) {
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.button, styles.secondButton]}
-                onPress={handlePress}
+                onPress={handleMoreDownPress}
               >
                 <Text style={[styles.buttonText]}>Rút tiền</Text>
               </TouchableOpacity>
@@ -464,6 +567,101 @@ export default function UserForm({ route }) {
             </View>
           </View>
           <Text style={[styles.br_30]}></Text>
+
+          <Modal
+            visible={isModalDownVisible}
+            animationType="slide"
+            presentationStyle="pageSheet"
+          >
+            <GestureHandlerScrollView>
+              <View style={styles.modalContainer}>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setIsModalDownVisible(false)}
+                >
+                  <Text style={styles.closeButtonText}>X</Text>
+                </TouchableOpacity>
+                <Text style={{ fontSize: 16 }}>Thông tin thanh toán</Text>
+
+                {/* Add your modal content here */}
+                <Text style={{ height: 10 }}></Text>
+                <ImageBackground
+                  source={require("../assets/logo.jpg")}
+                  style={styles.avatar}
+                />
+                <Text style={styles.userNameModal}>{user_name}</Text>
+                <Text style={styles.userEmailModal}>{ctvPhone}</Text>
+
+                <View style={styles.formContainer}>
+                  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
+                    Tên:
+                  </Text>
+                  <View style={[styles.containerDropDown]}>
+                    <TextInput
+                      onChangeText={setCTVName}
+                      style={[styles.detailInput, { width: "90%" }]}
+                      placeholder="cả họ và tên"
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.formContainer}>
+                  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
+                    Ngân hàng:
+                  </Text>
+                  <View style={[styles.containerDropDown]}>
+                    <TextInput
+                      onChangeText={setCTVBank}
+                      style={[styles.detailInput, { width: "90%" }]}
+                      placeholder="Chi nhánh"
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.formContainer}>
+                  <Text style={{ padding: 10, fontSize: 16, marginLeft: 2 }}>
+                    STK
+                  </Text>
+                  <View style={[styles.containerDropDown]}>
+                    <TextInput
+                      style={[styles.detailInput, { width: "90%" }]}
+                      onChangeText={setCTVSTK}
+                    />
+                  </View>
+                </View>
+
+                <View style={{ marginVertical: "5%" }}>
+                  <Text style={{ fontSize: 25, fontWeight: "bold" }}>
+                    Tổng số điểm muốn rút
+                  </Text>
+                </View>
+
+                <View
+                  style={{
+                    backgroundColor: "#E7E7E7",
+                    width: "60%",
+                    height: 100,
+                    paddingVertical: 35,
+                  }}
+                >
+                  <TextInput
+                    onChangeText={setPoint}
+                    textAlign="center"
+                    style={{ fontSize: 30 }}
+                  ></TextInput>
+                </View>
+
+                <Text style={{ height: 20 }}></Text>
+                <TouchableOpacity
+                  onPress={handleWithdraw}
+                  style={[styles.buttonModal, { backgroundColor: "#009470" }]}
+                >
+                  <Text style={styles.modalButtonText}>Submit</Text>
+                </TouchableOpacity>
+              </View>
+              <Text style={{ height: 330 }}></Text>
+            </GestureHandlerScrollView>
+          </Modal>
         </GestureHandlerScrollView>
       </GestureHandlerRootView>
     </>
