@@ -47,8 +47,12 @@ const styles = StyleSheet.create({
   dropdownItem: {
     paddingVertical: 12,
     paddingHorizontal: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(0, 0, 0, 0.1)",
+    borderWidth: 1,
+    borderColor: "rgba(0, 0, 0, 0.5)",
+    borderRadius: 10,
+    marginHorizontal: "1%",
+    flex: 1,
+    width: "50%",
   },
   dropdownText: {
     fontSize: 16,
@@ -158,7 +162,8 @@ const styles = StyleSheet.create({
   },
   modalButtonText: { fontSize: 18, color: "white", fontWeight: "bold" },
   formContainer: {
-    marginTop: "1%",
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
   containerDropDown: {
     backgroundColor: "white",

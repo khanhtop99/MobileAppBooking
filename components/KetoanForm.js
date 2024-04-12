@@ -8,6 +8,8 @@ import {
   Modal,
   StatusBar,
   Alert,
+  Button,
+  Image,
 } from "react-native";
 import styles from "./css/KetoanStyle";
 import {
@@ -20,8 +22,23 @@ import { useNavigation } from "@react-navigation/native";
 import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
+import * as ImagePicker from "expo-image-picker";
+
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, child, get } from "firebase/database";
+import {
+  getDatabase,
+  ref as databaseRef,
+  set,
+  child,
+  get,
+} from "firebase/database";
+
+import {
+  getDownloadURL,
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+} from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCicrLXIoWCQd3XvIFoNaUrYpuCRydsgaQ",
@@ -70,12 +87,14 @@ export default function UserForm({ route }) {
   const [image, setImage] = useState("");
   const [webUri, setWebUri] = useState("");
 
+  const [imageUpload, setImageUpload] = useState(null);
+
   function create(path, name, value) {
-    set(ref(database, path + name), value);
+    set(databaseRef(database, path + name), value);
   }
 
   function read(path, value) {
-    const dbRef = ref(getDatabase());
+    const dbRef = databaseRef(getDatabase());
     return get(child(dbRef, path))
       .then((snapshot) => {
         if (snapshot.exists()) {
@@ -97,8 +116,8 @@ export default function UserForm({ route }) {
 
   const handleRead = async () => {
     try {
-      const snapshotBooking = await get(ref(database, "Booking"));
-      const snapshotPayment = await get(ref(database, "Payment"));
+      const snapshotBooking = await get(databaseRef(database, "Booking"));
+      const snapshotPayment = await get(databaseRef(database, "Payment"));
       if (snapshotBooking.exists() && snapshotPayment.exists()) {
         setListBooking(snapshotBooking.val());
         setListPayment(snapshotPayment.val());
@@ -244,18 +263,20 @@ export default function UserForm({ route }) {
             create(
               "/User_management/" + ctvName + "/Agency/",
               "Amount_Total",
-              orderAmount / 10000 + valueAmountTotal.val
+              orderAmount / 12500 + valueAmountTotal.val
             );
 
             create(
               "/User_management/" + ctvName + "/Agency/",
               "Amount_Remain",
-              orderAmount / 10000 + valueAmountRemain.val
+              orderAmount / 12500 + valueAmountRemain.val
             );
             Alert.alert("Xác nhận đơn thành công");
             setCTVName("");
             setCTVPhone("");
             setOrderAmount("");
+            setImageUpload("");
+            setIsModalUpVisible(false);
           },
         },
       ]);
@@ -291,13 +312,50 @@ export default function UserForm({ route }) {
     ]);
   };
 
-  const parseTimeString = (timeString) => {
-    let parts = timeString.split(/[-/]/);
-    let hour = parseInt(parts[0]);
-    let day = parseInt(parts[1]);
-    let month = parseInt(parts[2]);
-    let year = parseInt(parts[3]);
-    return new Date(year, month - 1, day, hour);
+  const handleRejectPayment = async () => {
+    var valuePaymentRemain = { val: null };
+
+    await read(
+      "/User_management/" + ctvName + "/Agency/Amount_Remain",
+      valuePaymentRemain
+    );
+
+    Alert.alert("Bạn có chắc chắn muốn hủy đơn không?", "", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "OK",
+        onPress: () => {
+          create("/Payment/" + selectedPaymentId + "/", "Status", "Reject");
+        },
+      },
+    ]);
+  };
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const storage = getStorage(app); //the storage itself
+
+      const response = await fetch(result.assets[0].uri);
+      const blob = await response.blob();
+
+      // Upload Blob to Firebase Storage
+      const imageRef = storageRef(storage, "image.jpg"); // Storage reference
+      await uploadBytes(imageRef, blob);
+
+      const imageUrl = await getDownloadURL(imageRef); // Upload image Blob
+      setImageUpload(imageUrl);
+
+      Alert.alert("Image uploaded successfully!");
+    }
   };
 
   return (
@@ -374,11 +432,6 @@ export default function UserForm({ route }) {
                   // So sánh trạng thái theo ưu tiên
                   if (statusPriority[statusA] !== statusPriority[statusB]) {
                     return statusPriority[statusA] - statusPriority[statusB];
-                  } else {
-                    // Nếu trạng thái giống nhau, so sánh theo thời gian
-                    const timeA = parseTimeString(listBooking[a].Time);
-                    const timeB = parseTimeString(listBooking[b].Time);
-                    return timeB - timeA;
                   }
                 })
                 .map((bookingKey) => {
@@ -452,6 +505,8 @@ export default function UserForm({ route }) {
                         backgroundColor:
                           listPayment[paymentKey].Status === "Pending"
                             ? "white"
+                            : listPayment[paymentKey].Status === "Reject"
+                            ? "red"
                             : "green",
                       },
                     ]}
@@ -562,9 +617,13 @@ export default function UserForm({ route }) {
 
                   <View style={[styles.containerDropDown]}>
                     <ReadOnlyField
-                      label="Thời gian (10h-04/04/2024):"
+                      label="Thời gian:"
                       value={
-                        selectedBookingId && listBooking[selectedBookingId].Time
+                        selectedBookingId &&
+                        listBooking[selectedBookingId].Time.toString().slice(
+                          0,
+                          19
+                        )
                       }
                     />
                   </View>
@@ -598,6 +657,17 @@ export default function UserForm({ route }) {
                     onChangeText={(text) => setOrderAmount(text)} // Update orderAmount when text changes
                     value={orderAmount} // Set the value of TextInput to orderAmount
                   ></TextInput>
+                </View>
+                <Text style={{ height: 20 }}></Text>
+                <View>
+                  <Button title="Ảnh hóa đơn" onPress={pickImage} />
+                  <Text style={{ height: 20 }}></Text>
+                  {imageUpload && (
+                    <Image
+                      source={{ uri: imageUpload }}
+                      style={{ height: 450, width: 280, borderRadius: 5 }}
+                    />
+                  )}
                 </View>
 
                 <View style={styles.buttonContainer}>
@@ -694,6 +764,7 @@ export default function UserForm({ route }) {
                     <Text style={styles.modalButtonText}>Chấp nhận</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
+                    onPress={handleRejectPayment}
                     style={[styles.buttonModal, { backgroundColor: "red" }]}
                   >
                     <Text style={styles.modalButtonText}>Hủy</Text>

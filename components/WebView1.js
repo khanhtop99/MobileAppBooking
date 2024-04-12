@@ -90,7 +90,7 @@ export default function WebView1({ route }) {
   const navigation = useNavigation();
 
   const handleBackPress = () => {
-    navigation.navigate("UserForm", { inputText: username });
+    navigation.navigate("CTVForm", { inputText: username + "1" });
   };
 
   return (

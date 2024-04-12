@@ -193,15 +193,6 @@ export default function UserForm({ route }) {
     ]);
   };
 
-  const parseTimeString = (timeString) => {
-    let parts = timeString.split(/[-/]/);
-    let hour = parseInt(parts[0]);
-    let day = parseInt(parts[1]);
-    let month = parseInt(parts[2]);
-    let year = parseInt(parts[3]);
-    return new Date(year, month - 1, day, hour);
-  };
-
   return (
     <>
       <StatusBar backgroundColor="black" />
@@ -219,8 +210,6 @@ export default function UserForm({ route }) {
               source={require("../assets/logo.jpg")}
               style={styles.logo}
             ></ImageBackground>
-            <Text style={[styles.br_20]}></Text>
-            <Text style={[{ color: "white", fontSize: 16 }]}>slogan</Text>
 
             <ImageBackground
               source={require("../assets/images/tra.png")}
@@ -279,11 +268,6 @@ export default function UserForm({ route }) {
                   // So sánh trạng thái theo ưu tiên
                   if (statusPriority[statusA] !== statusPriority[statusB]) {
                     return statusPriority[statusA] - statusPriority[statusB];
-                  } else {
-                    // Nếu trạng thái giống nhau, so sánh theo thời gian
-                    const timeA = parseTimeString(listBooking[a].Time);
-                    const timeB = parseTimeString(listBooking[b].Time);
-                    return timeB - timeA;
                   }
                 })
                 .map((bookingKey) => {

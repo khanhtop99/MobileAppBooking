@@ -26,6 +26,7 @@ import moment from "moment";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, child, get } from "firebase/database";
 
+import DatePickerComponent from "../DatePickerComponent";
 const firebaseConfig = {
   apiKey: "AIzaSyCicrLXIoWCQd3XvIFoNaUrYpuCRydsgaQ",
   authDomain: "bookingshit-3c16d.firebaseapp.com",
@@ -58,7 +59,6 @@ const Register = () => {
     { label: "Khác", value: "Other" },
   ];
 
-  const [labelling, labellingset] = useState("Ketoan");
   const [isFocus, setIsFocus] = useState(false);
 
   const [username, setUsername] = useState("");
@@ -70,47 +70,49 @@ const Register = () => {
   const [phone, setPhone] = useState("");
 
   const [gender, setGender] = useState("Nam");
-  const [role, setRole] = useState("Ketoan");
+  const [role, setRole] = useState("CTV");
 
   const [listUserName, setListUserName] = useState([]);
+
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
 
   //() => labellingset("Admin");
 
   const handleSignUp = () => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+    let currentDate = new Date();
     if (
       !username ||
       !password ||
       !confirmPassword ||
       !email ||
       !fullName ||
-      !Dob ||
       !phone ||
       !gender ||
       !role
     ) {
-      Alert.alert("Error", "Please fill in all fields");
+      Alert.alert("Error", "Vui lòng điền đầy đủ thông tin");
     } else if (password !== confirmPassword) {
-      Alert.alert("Error", "Password and confirm password must match");
-    } else if (!moment(Dob, "DD/MM/YYYY", true).isValid()) {
-      Alert.alert(
-        "Error",
-        "Invalid Date of Birth format. Please enter in DD/MM/YYYY format"
-      );
+      Alert.alert("Error", "Mật khẩu và xác nhận mật khẩu không trùng khớp");
+    } else if (
+      selectedDate.toString().slice(0, 15) ===
+      currentDate.toString().slice(0, 15)
+    ) {
+      Alert.alert("Error", "Vui lòng nhập lại ngày sinh");
     } else if (!emailPattern.test(email)) {
-      Alert.alert("Error", "Invalid email format");
+      Alert.alert("Error", "Sai định dạng email");
     } else if (listUserName.includes(username)) {
       // Kiểm tra xem username có trong listUserName hay không
-      Alert.alert(
-        "Error",
-        "Username already exists. Please choose another one."
-      );
+      Alert.alert("Error", "Tên tài khoản đã tồi tại. Vui lòng chọn tên khác.");
     } else {
       //Add data to database
       addData();
       // Navigate to the next screen
-      Alert.alert("Bạn có chắc chắn muốn chấp nhận đơn không?", "", [
+      Alert.alert("Success", "Tài khoản của bạn đã được đăng ký thành công", [
         {
           text: "OK",
           onPress: () => {
@@ -162,7 +164,10 @@ const Register = () => {
       "/User_management/" + username + "/Account/Name",
       fullName
     );
-    setDataToLocation("/User_management/" + username + "/Account/DoB", Dob);
+    setDataToLocation(
+      "/User_management/" + username + "/Account/DoB",
+      selectedDate.toString().slice(0, 15)
+    );
     setDataToLocation(
       "/User_management/" + username + "/Account/Gender",
       gender
@@ -174,9 +179,13 @@ const Register = () => {
     );
     setDataToLocation(
       "/User_management/" + username + "/Agency/Amount_Total",
-      "0"
+      200
     );
-    setDataToLocation("/User_management/" + username + "/Role", labelling);
+    setDataToLocation(
+      "/User_management/" + username + "/Agency/Amount_Remain",
+      200
+    );
+    setDataToLocation("/User_management/" + username + "/Role", role);
 
     setDataToLocation("/User_management/" + username + "/Bank/Bank", "");
     setDataToLocation("/User_management/" + username + "/Bank/Name", "");
@@ -203,36 +212,38 @@ const Register = () => {
         <View style={styles.formContainer}>
           <TextInput
             style={styles.input}
-            placeholder="Username"
+            placeholder="Tên tài khoản"
             onChangeText={setUsername}
             value={username}
           />
           <TextInput
             style={styles.input}
-            placeholder="Password"
+            placeholder="Mật khẩu"
             secureTextEntry
             onChangeText={setPassword}
             value={password}
           />
           <TextInput
             style={styles.input}
-            placeholder="Confirm password"
+            placeholder="Xác nhận mật khẩu"
             secureTextEntry
             onChangeText={setConfirmPassword}
             value={confirmPassword}
           />
           <TextInput
             style={styles.input}
-            placeholder="Full Name"
+            placeholder="Họ và Tên"
             onChangeText={setFullName}
             value={fullName}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Date of Birth (DD/MM/YYYY)"
-            onChangeText={setDoB}
-            value={Dob}
-          />
+          <View>
+            <Text style={{ color: "white" }}>Ngày sinh</Text>
+            <Text style={{ height: 10 }}></Text>
+
+            <DatePickerComponent onDateChange={handleDateChange} />
+
+            <Text style={{ height: 8 }}></Text>
+          </View>
           <TextInput
             style={styles.input}
             placeholder="Email"
@@ -249,7 +260,7 @@ const Register = () => {
             maxHeight={300}
             labelField="label"
             valueField="value"
-            placeholder={!isFocus ? "Male" : "..."}
+            placeholder={!isFocus ? "Nam" : "..."}
             value={gender}
             onFocus={() => setIsFocus(true)}
             onBlur={() => setIsFocus(false)}
@@ -269,7 +280,7 @@ const Register = () => {
 
           <TextInput
             style={styles.input}
-            placeholder="Phone"
+            placeholder="Số điện thoại"
             onChangeText={setPhone}
             value={phone}
           />
@@ -283,7 +294,7 @@ const Register = () => {
             maxHeight={300}
             labelField="label"
             valueField="value"
-            placeholder={!isFocus ? "Admin" : "..."}
+            placeholder={!isFocus ? "Cộng tác viên" : "..."}
             value={role}
             onFocus={() => setIsFocus(true)}
             onBlur={() => setIsFocus(false)}
@@ -303,7 +314,7 @@ const Register = () => {
           />
 
           <TouchableOpacity onPress={handleSignUp} style={styles.button}>
-            <Text style={styles.buttonText}>Sign Up</Text>
+            <Text style={styles.buttonText}>Đăng ký</Text>
           </TouchableOpacity>
           <Text style={{ height: 330 }}></Text>
         </View>

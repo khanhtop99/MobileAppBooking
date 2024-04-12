@@ -9,6 +9,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Linking,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
@@ -16,6 +17,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, child, get } from "firebase/database";
 
+import DatePickerComponent from "../DatePickerComponent";
 export default function InfoPage2({ route }) {
   const firebaseConfig = {
     apiKey: "AIzaSyCicrLXIoWCQd3XvIFoNaUrYpuCRydsgaQ",
@@ -48,6 +50,14 @@ export default function InfoPage2({ route }) {
   const [date, setDate] = useState("");
   const [guestQuantity, setGuestQuantity] = useState("");
   const [note, setNote] = useState("");
+
+  const handleReset = () => {};
+
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
 
   function create(path, name, value) {
     set(ref(database, path + name), value);
@@ -93,141 +103,159 @@ export default function InfoPage2({ route }) {
       valueUserData = 0;
     }
     valueUserData += 1;
-    if (guestName && guestPhone && hour && date && guestQuantity && note) {
-      Alert.alert(
-        "Đơn hàng đã được gửi lên hệ thống \n Xin hãy chờ để được xác nhận"
-      );
-      // Add to Booking
-      create(
-        "/Booking/" + valueBookingData.toString() + "/",
-        "Account",
-        username.toString()
-      );
-      create("/Booking/" + valueBookingData.toString() + "/", "Hub", "Massage");
-      create(
-        "/Booking/" + valueBookingData.toString() + "/",
-        "Name",
-        guestName
-      );
-      create(
-        "/Booking/" + valueBookingData.toString() + "/",
-        "Phone",
-        guestPhone
-      );
-      create(
-        "/Booking/" + valueBookingData.toString() + "/",
-        "Quantity",
-        guestQuantity
-      );
-      create("/Booking/" + valueBookingData.toString() + "/", "Note", note);
-      create(
-        "/Booking/" + valueBookingData.toString() + "/",
-        "Time",
-        hour + "-" + date
-      );
-      create("/Booking/" + valueBookingData.toString() + "/", "Amount", 0);
-      create(
-        "/Booking/" + valueBookingData.toString() + "/",
-        "Status",
-        "Coming"
-      );
-      create(
-        "/Booking/" + valueBookingData.toString() + "/",
-        "IDUser",
-        parseInt(valueUser.val) + 1
-      );
+    if (
+      guestName &&
+      guestPhone &&
+      hour &&
+      selectedDate.toString() &&
+      guestQuantity &&
+      note
+    ) {
+      try {
+        // Add to Booking
+        create(
+          "/Booking/" + valueBookingData.toString() + "/",
+          "Account",
+          username.toString()
+        );
+        create(
+          "/Booking/" + valueBookingData.toString() + "/",
+          "Hub",
+          "Karaoke"
+        );
+        create(
+          "/Booking/" + valueBookingData.toString() + "/",
+          "Name",
+          guestName
+        );
+        create(
+          "/Booking/" + valueBookingData.toString() + "/",
+          "Phone",
+          guestPhone
+        );
+        create(
+          "/Booking/" + valueBookingData.toString() + "/",
+          "Quantity",
+          guestQuantity
+        );
+        create("/Booking/" + valueBookingData.toString() + "/", "Note", note);
+        create(
+          "/Booking/" + valueBookingData.toString() + "/",
+          "Time",
+          hour + " " + selectedDate.toString()
+        );
+        create("/Booking/" + valueBookingData.toString() + "/", "Amount", 0);
+        create(
+          "/Booking/" + valueBookingData.toString() + "/",
+          "Status",
+          "Coming"
+        );
+        create(
+          "/Booking/" + valueBookingData.toString() + "/",
+          "IDUser",
+          parseInt(valueUser.val) + 1
+        );
 
-      create("/Booking/", "Value", valueBookingData);
+        create("/Booking/", "Value", valueBookingData);
 
-      // Add to User_management
-      create(
-        "/User_management/" +
-          username.toString() +
-          "/Account/Booking/" +
-          valueUserData.toString() +
-          "/",
-        "Account",
-        username.toString()
-      );
+        // Add to User_management
+        create(
+          "/User_management/" +
+            username.toString() +
+            "/Account/Booking/" +
+            valueUserData.toString() +
+            "/",
+          "Account",
+          username.toString()
+        );
 
-      create(
-        "/User_management/" +
-          username.toString() +
-          "/Account/Booking/" +
-          valueUserData.toString() +
-          "/",
-        "Hub",
-        "Massage"
-      );
+        create(
+          "/User_management/" +
+            username.toString() +
+            "/Account/Booking/" +
+            valueUserData.toString() +
+            "/",
+          "Hub",
+          "Massage"
+        );
 
-      create(
-        "/User_management/" +
-          username.toString() +
-          "/Account/Booking/" +
-          valueUserData.toString() +
-          "/",
-        "Name",
-        guestName
-      );
-      create(
-        "/User_management/" +
-          username.toString() +
-          "/Account/Booking/" +
-          valueUserData.toString() +
-          "/",
-        "Phone",
-        guestPhone
-      );
-      create(
-        "/User_management/" +
-          username.toString() +
-          "/Account/Booking/" +
-          valueUserData.toString() +
-          "/",
-        "Quantity",
-        guestQuantity
-      );
-      create(
-        "/User_management/" +
-          username.toString() +
-          "/Account/Booking/" +
-          valueUserData.toString() +
-          "/",
-        "Note",
-        note
-      );
-      create(
-        "/User_management/" +
-          username.toString() +
-          "/Account/Booking/" +
-          valueUserData.toString() +
-          "/",
-        "Time",
-        hour + "-" + date
-      );
-      create(
-        "/User_management/" +
-          username.toString() +
-          "/Account/Booking/" +
-          valueUserData.toString() +
-          "/",
-        "Amount",
-        "0"
-      );
-      create(
-        "/User_management/" +
-          username.toString() +
-          "/Account/Booking/" +
-          valueUserData.toString() +
-          "/",
-        "Status",
-        "Coming"
-      );
-      create(
-        "/User_management/" + username.toString() + "/Account/Booking/",
-        "Value",
-        valueUserData.toString()
-      );
+        create(
+          "/User_management/" +
+            username.toString() +
+            "/Account/Booking/" +
+            valueUserData.toString() +
+            "/",
+          "Name",
+          guestName
+        );
+        create(
+          "/User_management/" +
+            username.toString() +
+            "/Account/Booking/" +
+            valueUserData.toString() +
+            "/",
+          "Phone",
+          guestPhone
+        );
+        create(
+          "/User_management/" +
+            username.toString() +
+            "/Account/Booking/" +
+            valueUserData.toString() +
+            "/",
+          "Quantity",
+          guestQuantity
+        );
+        create(
+          "/User_management/" +
+            username.toString() +
+            "/Account/Booking/" +
+            valueUserData.toString() +
+            "/",
+          "Note",
+          note
+        );
+        create(
+          "/User_management/" +
+            username.toString() +
+            "/Account/Booking/" +
+            valueUserData.toString() +
+            "/",
+          "Time",
+          hour + " " + selectedDate.toString()
+        );
+        create(
+          "/User_management/" +
+            username.toString() +
+            "/Account/Booking/" +
+            valueUserData.toString() +
+            "/",
+          "Amount",
+          "0"
+        );
+        create(
+          "/User_management/" +
+            username.toString() +
+            "/Account/Booking/" +
+            valueUserData.toString() +
+            "/",
+          "Status",
+          "Coming"
+        );
+        create(
+          "/User_management/" + username.toString() + "/Account/Booking/",
+          "Value",
+          valueUserData.toString()
+        );
+
+        // Display Alert after all operations completed
+        Alert.alert(
+          "Đơn hàng đã được gửi lên hệ thống \n Xin hãy chờ để được xác nhận"
+        );
+      } catch (error) {
+        console.error("Error occurred:", error);
+        // Handle error if needed
+      }
     }
   };
 
@@ -243,8 +271,78 @@ export default function InfoPage2({ route }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.container}>
-        {/* Icon "Back" */}
-
+        {/* Đặt hàng */}
+        <Text style={{ fontSize: 20, fontWeight: "bold" }}>Đặt Phòng</Text>
+        <View style={[styles.scrollViews, { height: 450 }]}>
+          <Text style={[styles.br_10]}></Text>
+          <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
+            Tên khách hàng
+          </Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setGuestName}
+            value={guestName}
+            placeholder="Tên Khánh Hàng"
+            placeholderTextColor="#888"
+          />
+          <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
+            Số điện thoại
+          </Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setGuestPhone}
+            value={guestPhone}
+            placeholder="Số điện thoại"
+            placeholderTextColor="#888"
+          />
+          <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
+            Số lượng khách
+          </Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setGuestQuantity}
+            value={guestQuantity}
+            placeholder="Số lượng khách"
+            placeholderTextColor="#888"
+          />
+          <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
+            Ghi chú
+          </Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setNote}
+            value={note}
+            placeholder="Ghi chú"
+            placeholderTextColor="#888"
+          />
+          <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
+            Thời gian
+          </Text>
+          <View style={[styles.flex_row, { flex: 1 }]}>
+            <View>
+              <DatePickerComponent onDateChange={handleDateChange} />
+            </View>
+            <Text style={{ width: 20 }}></Text>
+            <TextInput
+              style={[styles.input_new, { width: "60%" }]}
+              onChangeText={setHour}
+              value={hour}
+              placeholder="Giờ"
+              placeholderTextColor="#888"
+            />
+          </View>
+        </View>
+        <View style={styles.container_inside}>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[styles.button, styles.secondButton, { width: "50%" }]}
+              onPress={booking}
+            >
+              <Text style={[styles.buttonText]}>Submit</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <Text style={{ height: 20 }}></Text>
         <Text style={styles.header}>Nuru đẳng cấp bậc nhất Hà Nội</Text>
         <Image
           source={require("../assets/images/DSC00194.jpg")} // Assume quyong.jpg is the image file in the same directory
@@ -309,81 +407,6 @@ export default function InfoPage2({ route }) {
           khoảng thời gian làm việc căng thẳng.
         </Text>
 
-        <Text style={[styles.br_40]}></Text>
-        {/* Đặt hàng */}
-        <Text style={{ fontSize: 20, fontWeight: "bold" }}>Đặt Phòng</Text>
-        <View style={[styles.scrollViews, { height: 450 }]}>
-          <Text style={[styles.br_10]}></Text>
-          <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
-            Tên khách hàng
-          </Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setGuestName}
-            value={guestName}
-            placeholder="Tên Khánh Hàng"
-            placeholderTextColor="#888"
-          />
-          <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
-            Số điện thoại
-          </Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setGuestPhone}
-            value={guestPhone}
-            placeholder="Số điện thoại"
-            placeholderTextColor="#888"
-          />
-          <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
-            Số lượng khách
-          </Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setGuestQuantity}
-            value={guestQuantity}
-            placeholder="Số lượng khách"
-            placeholderTextColor="#888"
-          />
-          <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
-            Ghi chú
-          </Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setNote}
-            value={note}
-            placeholder="Ghi chú"
-            placeholderTextColor="#888"
-          />
-          <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 20 }}>
-            Thời gian
-          </Text>
-          <View style={[styles.flex_row, { flex: 1 }]}>
-            <TextInput
-              style={[styles.input_new, { width: "60%" }]}
-              onChangeText={setHour}
-              value={hour}
-              placeholder="Giờ"
-              placeholderTextColor="#888"
-            />
-            <TextInput
-              style={[styles.input_new, { width: "20%" }]}
-              onChangeText={setDate}
-              value={date}
-              placeholder="Ngày"
-              placeholderTextColor="#888"
-            />
-          </View>
-        </View>
-        <View style={styles.container_inside}>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.button, styles.secondButton, { width: "50%" }]}
-              onPress={booking}
-            >
-              <Text style={[styles.buttonText]}>Submit</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
         <Text style={{ height: 100 }}></Text>
       </ScrollView>
     </>
@@ -393,10 +416,10 @@ export default function InfoPage2({ route }) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    marginTop: 50,
+    marginTop: 20,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    paddingHorizontal: 20,
   },
   image: {
     width: 350,

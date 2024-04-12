@@ -191,16 +191,6 @@ export default function UserForm({ route }) {
     setActiveIndex(index);
   };
 
-  // Hàm chuyển đổi chuỗi thời gian sang đối tượng Date
-  const parseTimeString = (timeString) => {
-    let parts = timeString.split(/[-/]/);
-    let hour = parseInt(parts[0]);
-    let day = parseInt(parts[1]);
-    let month = parseInt(parts[2]);
-    let year = parseInt(parts[3]);
-    return new Date(year, month - 1, day, hour);
-  };
-
   const renderItem = ({ item, index }) => {
     const handleImagePress = () => {
       // Navigate to the respective page based on the index or id of the item
@@ -278,6 +268,10 @@ export default function UserForm({ route }) {
 
   const handleWithdraw = async () => {
     if (point > ctvRemain - 200) {
+      Alert.alert(
+        "Số điểm nhập quá lớn (Cần tối thiểu 200 điểm để duy trì tài khoản)\nVui lòng nhập lại"
+      );
+    } else if (point == 0) {
       Alert.alert(
         "Số điểm nhập quá lớn (Cần tối thiểu 200 điểm để duy trì tài khoản)\nVui lòng nhập lại"
       );
@@ -400,6 +394,32 @@ export default function UserForm({ route }) {
                 <Text style={styles.dropdownText}>
                   Karaoke Monaco 235 Lê Đức Thọ
                 </Text>
+                <Image
+                  style={{
+                    width: "100%",
+                    height: 100,
+                    marginTop: 5,
+                    borderRadius: 10,
+                  }}
+                  source={require("../assets/images/DSC00593.jpg")}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.dropdownItem}
+                onPress={karaokeOption1}
+              >
+                <Text style={styles.dropdownText}>
+                  Karaoke Monaco 235 Lê Đức Thọ
+                </Text>
+                <Image
+                  style={{
+                    width: "100%",
+                    height: 100,
+                    marginTop: 5,
+                    borderRadius: 10,
+                  }}
+                  source={require("../assets/images/DSC00593.jpg")}
+                />
               </TouchableOpacity>
             </View>
           )}
@@ -417,6 +437,30 @@ export default function UserForm({ route }) {
                 onPress={karaokeOption2}
               >
                 <Text style={styles.dropdownText}>Massage Quý Ông</Text>
+                <Image
+                  style={{
+                    width: "100%",
+                    height: 100,
+                    marginTop: 5,
+                    borderRadius: 10,
+                  }}
+                  source={require("../assets/images/DSC00205.jpg")}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.dropdownItem}
+                onPress={karaokeOption2}
+              >
+                <Text style={styles.dropdownText}>Massage Quý Ông</Text>
+                <Image
+                  style={{
+                    width: "100%",
+                    height: 100,
+                    marginTop: 5,
+                    borderRadius: 10,
+                  }}
+                  source={require("../assets/images/DSC00205.jpg")}
+                />
               </TouchableOpacity>
             </View>
           )}
@@ -454,11 +498,6 @@ export default function UserForm({ route }) {
                     // So sánh trạng thái theo ưu tiên
                     if (statusPriority[statusA] !== statusPriority[statusB]) {
                       return statusPriority[statusA] - statusPriority[statusB];
-                    } else {
-                      // Nếu trạng thái giống nhau, so sánh theo thời gian
-                      const timeA = parseTimeString(don_hang.val[a].Time);
-                      const timeB = parseTimeString(don_hang.val[b].Time);
-                      return timeB - timeA;
                     }
                   })
                   .map((key) => {
@@ -481,7 +520,6 @@ export default function UserForm({ route }) {
                       default:
                         backgroundColor = "white";
                     }
-
                     return (
                       <View key={key} style={[styles.flex]}>
                         <Text style={[styles.br_10]}></Text>
@@ -504,7 +542,7 @@ export default function UserForm({ route }) {
                             {don_hang.val[key].Name}
                           </Text>
                           <Text style={styles.text}>
-                            {don_hang.val[key].Time}
+                            {don_hang.val[key].Time.slice(0, 19)}
                           </Text>
                         </View>
                         <Text style={[styles.br_10]}></Text>
